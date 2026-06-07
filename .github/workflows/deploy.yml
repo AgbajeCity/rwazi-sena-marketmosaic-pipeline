@@ -31,11 +31,26 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel@54.9.1
 
+      - name: Cancel stuck Vercel deployments
+        run: |
+          TOKEN="${{ secrets.VERCEL_TOKEN }}"
+          # Cancel any deployments in BUILDING or QUEUED state
+          for STATE in BUILDING QUEUED; do
+            UIDS=$(curl -sf "https://api.vercel.com/v6/deployments?app=sena-pipeline&state=$STATE&limit=20" \
+              -H "Authorization: Bearer $TOKEN" | jq -r '.deployments[]?.uid // empty' 2>/dev/null || true)
+            for UID in $UIDS; do
+              echo "Cancelling $UID ($STATE)"
+              curl -sf -X PATCH "https://api.vercel.com/v12/deployments/$UID/cancel" \
+                -H "Authorization: Bearer $TOKEN" || true
+            done
+          done
+          echo "Pre-deploy cleanup done"
+
       - name: Deploy to Vercel
         id: deploy
         timeout-minutes: 8
         run: |
-          URL=$(vercel deploy --prod --yes --force \
+          URL=$(vercel deploy --prod --yes \
             --name sena-pipeline \
             --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$URL" >> "$GITHUB_OUTPUT"

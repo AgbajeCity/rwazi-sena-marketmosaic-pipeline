@@ -35,9 +35,9 @@ jobs:
         id: deploy
         timeout-minutes: 8
         run: |
-          URL=$(vercel deploy --prod --yes \
+          URL=$(vercel deploy --prod --yes --force \
             --name sena-pipeline \
-            --token=${{ secrets.VERCEL_TOKEN }} 2>&1 | tail -1)
+            --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "Deployed → $URL"
         working-directory: web

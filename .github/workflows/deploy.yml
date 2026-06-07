@@ -54,9 +54,6 @@ jobs:
             vercel env add BEEHIIV_API_KEY production --token=${{ secrets.VERCEL_TOKEN }}
           echo "${{ secrets.SENA_BLOB_READ_WRITE_TOKEN }}" | \
             vercel env add SENA_BLOB_READ_WRITE_TOKEN production --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
 
       - name: Summary
         run: echo "### Deployed to ${{ steps.deploy.outputs.url }}" >> $GITHUB_STEP_SUMMARY

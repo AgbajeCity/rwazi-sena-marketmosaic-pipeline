@@ -7,18 +7,25 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 export async function POST() {
-  // Mark as running immediately
-  await saveStatus({
-    state: "running",
-    startedAt: new Date().toISOString(),
-    finishedAt: null,
-    message: "Pipeline is running…",
-    leadCount: 0,
-  });
+  // Validate required env vars up front
+  if (!process.env.BEEHIIV_API_KEY) {
+    return NextResponse.json({ ok: false, error: "BEEHIIV_API_KEY is not set" }, { status: 500 });
+  }
+  const blobToken = process.env.SENA_BLOB_READ_WRITE_TOKEN ?? process.env.BLOB_READ_WRITE_TOKEN;
+  if (!blobToken) {
+    return NextResponse.json({ ok: false, error: "Blob token (SENA_BLOB_READ_WRITE_TOKEN or BLOB_READ_WRITE_TOKEN) is not set" }, { status: 500 });
+  }
 
   try {
+    await saveStatus({
+      state: "running",
+      startedAt: new Date().toISOString(),
+      finishedAt: null,
+      message: "Pipeline is running…",
+      leadCount: 0,
+    });
+
     const result = await runPipeline(async (msg) => {
-      // Update status message periodically so polling UI shows progress
       await saveStatus({
         state: "running",
         startedAt: new Date().toISOString(),
@@ -46,7 +53,7 @@ export async function POST() {
       finishedAt: new Date().toISOString(),
       message: `Error: ${msg}`,
       leadCount: 0,
-    });
+    }).catch(() => {});
     return NextResponse.json({ ok: false, error: msg }, { status: 500 });
   }
 }

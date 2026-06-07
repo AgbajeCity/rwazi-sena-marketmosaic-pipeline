@@ -1,5 +1,8 @@
-import { put, head, getDownloadUrl } from "@vercel/blob";
+import { put, head } from "@vercel/blob";
 import { PipelineResult } from "./pipeline";
+
+// Vercel connected the blob store with a custom prefix
+const token = process.env.SENA_BLOB_READ_WRITE_TOKEN ?? process.env.BLOB_READ_WRITE_TOKEN;
 
 const LEADS_BLOB_KEY = "sena-pipeline/leads-latest.json";
 const STATUS_BLOB_KEY = "sena-pipeline/run-status.json";
@@ -17,12 +20,13 @@ export async function saveLeads(result: PipelineResult): Promise<void> {
     access: "public",
     contentType: "application/json",
     addRandomSuffix: false,
+    token,
   });
 }
 
 export async function loadLeads(): Promise<PipelineResult | null> {
   try {
-    const meta = await head(LEADS_BLOB_KEY);
+    const meta = await head(LEADS_BLOB_KEY, { token });
     if (!meta) return null;
     const res = await fetch(meta.url);
     if (!res.ok) return null;
@@ -37,6 +41,7 @@ export async function saveStatus(status: RunStatus): Promise<void> {
     access: "public",
     contentType: "application/json",
     addRandomSuffix: false,
+    token,
   });
 }
 

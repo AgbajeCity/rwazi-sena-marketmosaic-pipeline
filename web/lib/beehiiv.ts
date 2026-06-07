@@ -54,7 +54,9 @@ export async function listSubscribersPage(
     status: "active",
     page: String(page),
     limit: String(limit),
-    expand: "stats",
+    // oldest first = highest tenure score
+    order_by: "created",
+    direction: "asc",
   });
 }
 

@@ -1,4 +1,4 @@
-import { CONSUMER_DOMAINS, MAX_ENRICHMENT } from "./config";
+import { CONSUMER_DOMAINS, MAX_ENRICHMENT, MAX_SCAN_PAGES } from "./config";
 import {
   listSubscribersPage,
   getSubscription,
@@ -49,7 +49,7 @@ export async function runPipeline(onProgress?: ProgressCallback): Promise<Pipeli
   let totalPages = 1;
   let totalScanned = 0;
 
-  while (page <= totalPages && candidates.length < MAX_ENRICHMENT) {
+  while (page <= totalPages && page <= MAX_SCAN_PAGES && candidates.length < MAX_ENRICHMENT) {
     const resp = await listSubscribersPage(page, 100);
     totalPages = resp.total_pages ?? 1;
     totalScanned += resp.data.length;

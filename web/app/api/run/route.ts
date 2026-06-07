@@ -4,8 +4,7 @@ import { saveLeads, saveStatus } from "@/lib/storage";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-// Allow up to 5 minutes on Vercel Pro (Fluid compute)
-export const maxDuration = 300;
+export const maxDuration = 60;
 
 export async function POST() {
   // Mark as running immediately

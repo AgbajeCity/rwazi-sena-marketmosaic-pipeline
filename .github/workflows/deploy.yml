@@ -1,0 +1,54 @@
+name: Deploy Sena Web to Vercel
+
+on:
+  push:
+    branches: [main, "claude/nifty-newton-KOvRC"]
+    paths: ["web/**"]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Deploy to Vercel
+        id: deploy
+        run: |
+          URL=$(vercel deploy --prod --yes \
+            --name sena-pipeline \
+            --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "Deployed → $URL"
+        working-directory: web
+        env:
+          BEEHIIV_API_KEY: ${{ secrets.BEEHIIV_API_KEY }}
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+
+      - name: Set environment variables on Vercel project
+        run: |
+          vercel env rm BEEHIIV_API_KEY production --yes \
+            --token=${{ secrets.VERCEL_TOKEN }} 2>/dev/null || true
+          echo "${{ secrets.BEEHIIV_API_KEY }}" | \
+            vercel env add BEEHIIV_API_KEY production \
+            --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env rm BLOB_READ_WRITE_TOKEN production --yes \
+            --token=${{ secrets.VERCEL_TOKEN }} 2>/dev/null || true
+          echo "${{ secrets.BLOB_READ_WRITE_TOKEN }}" | \
+            vercel env add BLOB_READ_WRITE_TOKEN production \
+            --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: web
+
+      - name: Summary
+        run: |
+          echo "### Deployment complete" >> $GITHUB_STEP_SUMMARY
+          echo "URL: ${{ steps.deploy.outputs.url }}" >> $GITHUB_STEP_SUMMARY

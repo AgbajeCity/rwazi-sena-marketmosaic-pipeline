@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
 import { loadLeads } from "@/lib/storage";
+import seedLeads from "@/lib/seed-leads.json";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   const result = await loadLeads();
-  if (!result) {
-    return NextResponse.json({ leads: [], totalProcessed: 0, runDate: null });
-  }
-  return NextResponse.json(result);
+  // Fall back to seeded data if blob has no results yet
+  return NextResponse.json(result ?? seedLeads);
 }

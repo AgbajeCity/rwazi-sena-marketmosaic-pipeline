@@ -17,7 +17,7 @@ export interface RunStatus {
 
 export async function saveLeads(result: PipelineResult): Promise<void> {
   await put(LEADS_BLOB_KEY, JSON.stringify(result), {
-    access: "public",
+    access: "private",
     contentType: "application/json",
     addRandomSuffix: false,
     token,
@@ -28,7 +28,10 @@ export async function loadLeads(): Promise<PipelineResult | null> {
   try {
     const meta = await head(LEADS_BLOB_KEY, { token });
     if (!meta) return null;
-    const res = await fetch(meta.url);
+    // For private blobs fetch via SDK using the token
+    const res = await fetch(meta.url, {
+      headers: token ? { authorization: `Bearer ${token}` } : {},
+    });
     if (!res.ok) return null;
     return res.json() as Promise<PipelineResult>;
   } catch {
@@ -38,7 +41,7 @@ export async function loadLeads(): Promise<PipelineResult | null> {
 
 export async function saveStatus(status: RunStatus): Promise<void> {
   await put(STATUS_BLOB_KEY, JSON.stringify(status), {
-    access: "public",
+    access: "private",
     contentType: "application/json",
     addRandomSuffix: false,
     token,
@@ -47,9 +50,11 @@ export async function saveStatus(status: RunStatus): Promise<void> {
 
 export async function loadStatus(): Promise<RunStatus> {
   try {
-    const meta = await head(STATUS_BLOB_KEY);
+    const meta = await head(STATUS_BLOB_KEY, { token });
     if (!meta) return defaultStatus();
-    const res = await fetch(meta.url);
+    const res = await fetch(meta.url, {
+      headers: token ? { authorization: `Bearer ${token}` } : {},
+    });
     if (!res.ok) return defaultStatus();
     return res.json() as Promise<RunStatus>;
   } catch {

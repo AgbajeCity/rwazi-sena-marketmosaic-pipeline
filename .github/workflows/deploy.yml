@@ -31,33 +31,30 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel@54.9.1
 
-      - name: Cancel stuck Vercel deployments
+      - name: Resolve Vercel project IDs
+        id: vercel-ids
         run: |
-          TOKEN="${{ secrets.VERCEL_TOKEN }}"
-          # Cancel any deployments in BUILDING or QUEUED state
-          for STATE in BUILDING QUEUED; do
-            UIDS=$(curl -sf "https://api.vercel.com/v6/deployments?app=sena-pipeline&state=$STATE&limit=20" \
-              -H "Authorization: Bearer $TOKEN" | jq -r '.deployments[]?.uid // empty' 2>/dev/null || true)
-            for UID in $UIDS; do
-              echo "Cancelling $UID ($STATE)"
-              curl -sf -X PATCH "https://api.vercel.com/v12/deployments/$UID/cancel" \
-                -H "Authorization: Bearer $TOKEN" || true
-            done
-          done
-          echo "Pre-deploy cleanup done"
+          PROJ=$(curl -sf "https://api.vercel.com/v9/projects/sena-pipeline" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" || echo "{}")
+          PROJECT_ID=$(echo "$PROJ" | jq -r '.id // empty')
+          ACCOUNT_ID=$(echo "$PROJ" | jq -r '.accountId // empty')
+          echo "project_id=$PROJECT_ID" >> "$GITHUB_OUTPUT"
+          echo "account_id=$ACCOUNT_ID" >> "$GITHUB_OUTPUT"
+          echo "Resolved project_id=$PROJECT_ID account_id=$ACCOUNT_ID"
 
       - name: Deploy to Vercel
         id: deploy
         timeout-minutes: 8
         run: |
           URL=$(vercel deploy --prod --yes \
-            --name sena-pipeline \
             --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "Deployed → $URL"
         working-directory: web
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ steps.vercel-ids.outputs.project_id }}
+          VERCEL_ORG_ID: ${{ steps.vercel-ids.outputs.account_id }}
 
       - name: Set env vars on Vercel project
         timeout-minutes: 2
@@ -70,6 +67,9 @@ jobs:
             vercel env add BEEHIIV_API_KEY production --token=${{ secrets.VERCEL_TOKEN }}
           echo "${{ secrets.SENA_BLOB_READ_WRITE_TOKEN }}" | \
             vercel env add SENA_BLOB_READ_WRITE_TOKEN production --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_PROJECT_ID: ${{ steps.vercel-ids.outputs.project_id }}
+          VERCEL_ORG_ID: ${{ steps.vercel-ids.outputs.account_id }}
 
       - name: Summary
         run: echo "### Deployed to ${{ steps.deploy.outputs.url }}" >> $GITHUB_STEP_SUMMARY

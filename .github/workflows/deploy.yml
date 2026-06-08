@@ -39,12 +39,26 @@ jobs:
 
       - name: Deploy prebuilt output
         id: deploy
-        timeout-minutes: 5
+        timeout-minutes: 8
         run: |
-          URL=$(vercel deploy --prebuilt --prod --yes --no-wait \
-            --token=${{ secrets.VERCEL_TOKEN }})
-          echo "url=$URL" >> "$GITHUB_OUTPUT"
-          echo "Deployed → $URL"
+          # Vercel intermittently returns "deployment failed, retry later".
+          # Retry a few times with backoff before giving up.
+          set +e
+          for attempt in 1 2 3 4; do
+            echo "Deploy attempt $attempt…"
+            URL=$(vercel deploy --prebuilt --prod --yes --no-wait \
+              --token=${{ secrets.VERCEL_TOKEN }})
+            STATUS=$?
+            if [ $STATUS -eq 0 ] && [ -n "$URL" ]; then
+              echo "url=$URL" >> "$GITHUB_OUTPUT"
+              echo "Deployed → $URL"
+              exit 0
+            fi
+            echo "Attempt $attempt failed (exit $STATUS). Backing off…"
+            sleep $((attempt * 15))
+          done
+          echo "All deploy attempts failed." >&2
+          exit 1
         working-directory: web
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}

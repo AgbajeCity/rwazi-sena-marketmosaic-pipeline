@@ -14,7 +14,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
 
@@ -33,7 +33,7 @@ jobs:
 
       - name: Deploy to Vercel
         id: deploy
-        timeout-minutes: 8
+        timeout-minutes: 20
         run: |
           URL=$(vercel deploy --prod --yes \
             --token=${{ secrets.VERCEL_TOKEN }})

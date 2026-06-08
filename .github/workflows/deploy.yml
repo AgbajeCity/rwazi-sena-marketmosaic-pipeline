@@ -31,11 +31,17 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel@54.9.1
 
-      - name: Deploy to Vercel
+      - name: Build (local)
+        run: vercel build --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: web
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy prebuilt output
         id: deploy
         timeout-minutes: 5
         run: |
-          URL=$(vercel deploy --prod --yes --no-wait \
+          URL=$(vercel deploy --prebuilt --prod --yes \
             --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "Deployed → $URL"

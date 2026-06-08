@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
 import { loadLeads } from "@/lib/storage";
+import seedLeads from "@/lib/seed-leads.json";
+import { PipelineResult } from "@/lib/pipeline";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const result = await loadLeads();
-  if (!result) {
-    return new NextResponse("No data available", { status: 404 });
-  }
+  const result: PipelineResult = (await loadLeads()) ?? (seedLeads as unknown as PipelineResult);
 
   const headers = [
     "email", "domain", "company", "job_title", "seniority_tier",
@@ -34,7 +33,7 @@ export async function GET() {
     .map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
     .join("\n");
 
-  const date = new Date(result.runDate).toISOString().slice(0, 10);
+  const date = result.runDate ? new Date(result.runDate).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
   return new NextResponse(csv, {
     headers: {
       "Content-Type": "text/csv",

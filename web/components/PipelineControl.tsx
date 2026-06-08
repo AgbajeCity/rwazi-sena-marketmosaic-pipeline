@@ -49,7 +49,7 @@ export function PipelineControl({ onComplete }: Props) {
         <div className="flex items-center gap-2">
           <StatusBadge state={status?.state ?? "idle"} />
           <span className="text-sm font-medium text-gray-700 truncate">
-            {status?.message ?? "Ready to run"}
+            {status?.message ?? "Ready to scan for decision-makers"}
           </span>
         </div>
         {status?.finishedAt && status.state === "done" && (

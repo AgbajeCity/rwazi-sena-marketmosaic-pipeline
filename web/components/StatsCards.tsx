@@ -60,7 +60,7 @@ export function StatsCards({ leads, totalProcessed, runDate }: Props) {
 
   const cards = [
     {
-      label: "Total Qualified",
+      label: "Total Prospects",
       value: leads.length,
       sub: `from ${totalProcessed.toLocaleString()} scanned`,
       border: "border-l-indigo-500",
@@ -68,9 +68,9 @@ export function StatsCards({ leads, totalProcessed, runDate }: Props) {
       icon: <UsersIcon />,
     },
     {
-      label: "Top Tier (≥70)",
+      label: "High-Priority (≥70)",
       value: top,
-      sub: "Immediate outreach",
+      sub: "Book a tailored demo",
       border: "border-l-emerald-500",
       iconColor: "text-emerald-500",
       icon: <StarIcon />,
@@ -78,7 +78,7 @@ export function StatsCards({ leads, totalProcessed, runDate }: Props) {
     {
       label: "Qualified (50–69)",
       value: qualified,
-      sub: "Nurture sequence",
+      sub: "Decision-ready nurture",
       border: "border-l-blue-500",
       iconColor: "text-blue-500",
       icon: <CheckCircleIcon />,
@@ -86,15 +86,15 @@ export function StatsCards({ leads, totalProcessed, runDate }: Props) {
     {
       label: "Warm (30–49)",
       value: warm,
-      sub: "Monitor & engage",
+      sub: "Monitor market signals",
       border: "border-l-amber-500",
       iconColor: "text-amber-500",
       icon: <FlameIcon />,
     },
     {
-      label: "Confirmed Senior",
+      label: "Senior Executives",
       value: highSeniority,
-      sub: "Title-verified execs",
+      sub: "C-suite & VP-level",
       border: "border-l-purple-500",
       iconColor: "text-purple-500",
       icon: <ShieldIcon />,

@@ -43,14 +43,12 @@ export default function DashboardPage() {
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-indigo-600">
               <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="4" height="12" rx="1" fill="currentColor" stroke="none" />
-                <rect x="10" y="7" width="4" height="8" rx="1" fill="currentColor" stroke="none" />
-                <rect x="17" y="5" width="4" height="10" rx="1" fill="currentColor" stroke="none" />
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-gray-900 leading-tight">Sena Lead Pipeline</h1>
-              <p className="text-xs text-gray-500 leading-tight">Senior executives from Market Mosaic subscribers</p>
+              <h1 className="text-xl font-semibold text-gray-900 leading-tight">Sena Decision AI — Prospect Pipeline</h1>
+              <p className="text-xs text-gray-500 leading-tight">Enterprise decision-makers identified from Market Mosaic subscribers</p>
             </div>
           </div>
           <span className="rounded-full bg-indigo-600 px-3 py-1 text-xs font-semibold text-white tracking-wide">
@@ -107,9 +105,9 @@ function EmptyState() {
           <path d="M16 3.13a4 4 0 0 1 0 7.75" />
         </svg>
       </div>
-      <h2 className="text-lg font-semibold text-gray-700 mb-1">No leads yet</h2>
+      <h2 className="text-lg font-semibold text-gray-700 mb-1">No prospects yet</h2>
       <p className="text-sm text-gray-400 max-w-sm mx-auto">
-        Click <strong className="text-gray-600">Run Pipeline</strong> above to scan Market Mosaic subscribers and surface qualified leads.
+        Click <strong className="text-gray-600">Run Pipeline</strong> to scan Market Mosaic subscribers and surface senior executives who are ready to decide with confidence.
       </p>
     </div>
   );

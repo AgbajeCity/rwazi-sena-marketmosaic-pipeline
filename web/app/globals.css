@@ -1,21 +1,68 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Sena dark palette */
+  --background: #08070d;
+  --surface: #0f0f17;
+  --surface-2: #14141e;
+  --border: rgba(255, 255, 255, 0.07);
+  --foreground: #f4f4f5;
+  --muted: #a1a1aa;
+  --accent: #7df59e;       /* Sena mint green */
+  --accent-dim: #6ce28d;
+  --violet: #856de6;       /* Sena "Decision AI" pill */
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
   --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-violet: var(--violet);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
+html,
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Perspective grid glow used in the hero band, echoing the Sena landing page */
+.sena-hero {
+  background:
+    radial-gradient(120% 90% at 50% -10%, rgba(125, 245, 158, 0.10) 0%, rgba(8, 7, 13, 0) 55%),
+    radial-gradient(90% 70% at 50% 120%, rgba(133, 109, 230, 0.10) 0%, rgba(8, 7, 13, 0) 60%),
+    #08070d;
+}
+
+/* Subtle top-light sheen for cards */
+.sena-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0%, rgba(255, 255, 255, 0) 40%), var(--surface);
+}
+
+/* Thin custom scrollbar for the dark theme */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
+  background-clip: content-box;
 }

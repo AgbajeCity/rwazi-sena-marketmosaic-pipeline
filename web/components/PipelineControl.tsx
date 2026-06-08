@@ -44,16 +44,16 @@ export function PipelineControl({ onComplete }: Props) {
   const isRunning = status?.state === "running" || triggering;
 
   return (
-    <div className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white px-5 py-4 shadow-sm">
-      <div className="flex-1 min-w-0">
+    <div className="sena-card flex items-center gap-4 rounded-2xl border border-white/[0.07] px-5 py-4">
+      <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <StatusBadge state={status?.state ?? "idle"} />
-          <span className="text-sm font-medium text-gray-700 truncate">
+          <span className="truncate text-sm font-medium text-zinc-300">
             {status?.message ?? "Ready to scan for decision-makers"}
           </span>
         </div>
         {status?.finishedAt && status.state === "done" && (
-          <p className="mt-1 text-xs text-gray-400">
+          <p className="mt-1 text-xs text-zinc-500">
             Finished{" "}
             {new Date(status.finishedAt).toLocaleString(undefined, {
               month: "short",
@@ -65,12 +65,12 @@ export function PipelineControl({ onComplete }: Props) {
         )}
       </div>
 
-      <div className="flex gap-2 shrink-0">
+      <div className="flex shrink-0 gap-2">
         <a
           href="/api/export"
-          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 px-3 py-2 text-sm font-medium text-zinc-300 transition-colors hover:border-white/30 hover:text-white"
         >
-          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <polyline points="7 10 12 15 17 10" />
             <line x1="12" y1="15" x2="12" y2="3" />
@@ -80,7 +80,7 @@ export function PipelineControl({ onComplete }: Props) {
         <button
           onClick={triggerRun}
           disabled={isRunning}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-[#7df59e] px-4 py-2 text-sm font-semibold text-[#08070d] shadow-[0_0_20px_-4px_rgba(125,245,158,0.5)] transition-colors hover:bg-[#6ce28d] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
         >
           {isRunning ? (
             <>
@@ -101,10 +101,10 @@ export function PipelineControl({ onComplete }: Props) {
 
 function StatusBadge({ state }: { state: string }) {
   const config: Record<string, { dot: string; bg: string; text: string; label: string }> = {
-    idle:    { dot: "bg-gray-400",           bg: "bg-gray-100",   text: "text-gray-600",   label: "Idle" },
-    running: { dot: "bg-amber-400 animate-pulse", bg: "bg-amber-50",  text: "text-amber-700",  label: "Running" },
-    done:    { dot: "bg-emerald-500",         bg: "bg-emerald-50", text: "text-emerald-700", label: "Done" },
-    error:   { dot: "bg-red-500",             bg: "bg-red-50",     text: "text-red-700",     label: "Error" },
+    idle:    { dot: "bg-zinc-500",                  bg: "bg-white/5",        text: "text-zinc-400",    label: "Idle" },
+    running: { dot: "bg-amber-400 animate-pulse",   bg: "bg-amber-400/10",   text: "text-amber-300",   label: "Running" },
+    done:    { dot: "bg-[#7df59e]",                 bg: "bg-[#7df59e]/10",   text: "text-[#7df59e]",   label: "Done" },
+    error:   { dot: "bg-red-400",                   bg: "bg-red-400/10",     text: "text-red-300",     label: "Error" },
   };
   const c = config[state] ?? config.idle;
   return (

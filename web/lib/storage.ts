@@ -50,9 +50,7 @@ export async function loadStatus(): Promise<RunStatus> {
   try {
     const meta = await head(STATUS_BLOB_KEY, { token });
     if (!meta) return defaultStatus();
-    const res = await fetch(meta.url, {
-      headers: token ? { authorization: `Bearer ${token}` } : {},
-    });
+    const res = await fetch(meta.url);
     if (!res.ok) return defaultStatus();
     return res.json() as Promise<RunStatus>;
   } catch {

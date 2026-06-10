@@ -16,10 +16,10 @@ export const TENURE_MIN_DAYS = 30;
 export const TENURE_MAX_DAYS = 180;
 
 // Max leads to return after scoring
-export const MAX_ENRICHMENT = 100;
+export const MAX_ENRICHMENT = 200;
 
 // Pages to fetch in parallel (100 subs/page) — all fetched simultaneously
-export const MAX_SCAN_PAGES = 5;
+export const MAX_SCAN_PAGES = 50;
 
 // Consumer email domains to exclude
 export const CONSUMER_DOMAINS = new Set([

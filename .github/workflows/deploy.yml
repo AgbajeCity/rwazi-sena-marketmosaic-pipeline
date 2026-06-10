@@ -8,6 +8,10 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_PROJECT_ID: prj_B2S3jJDip6PKHFjEVnkbDgGvHm5h
+
     steps:
       - uses: actions/checkout@v4
 
@@ -18,11 +22,20 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
 
+      - name: Resolve org ID from token
+        id: org
+        run: |
+          ORG_ID=$(curl -s "https://api.vercel.com/v2/user" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" | \
+            python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('user',{}).get('id',''))")
+          echo "VERCEL_ORG_ID=$ORG_ID" >> $GITHUB_ENV
+          echo "Resolved org ID: $ORG_ID"
+
       - name: Pull Vercel environment
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --environment=production --token=$VERCEL_TOKEN
 
       - name: Build
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel build --prod --token=$VERCEL_TOKEN
 
       - name: Deploy
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN

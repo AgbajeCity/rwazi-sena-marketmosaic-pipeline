@@ -44,7 +44,12 @@ export async function POST() {
       leadCount: result.leads.length,
     });
 
-    return NextResponse.json({ ok: true, leadCount: result.leads.length });
+    return NextResponse.json({
+      ok: true,
+      leadCount: result.leads.length,
+      totalProcessed: result.totalProcessed,
+      durationMs: result.durationMs,
+    });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     await saveStatus({

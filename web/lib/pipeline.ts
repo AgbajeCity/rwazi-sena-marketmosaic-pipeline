@@ -111,7 +111,8 @@ export async function runPipeline(onProgress?: ProgressCallback): Promise<Pipeli
 
   leads.sort((a, b) => b.score - a.score);
 
-  log(`Done — ${leads.length} leads from ${totalScanned} subscribers`);
+  const enrichedCount = details.filter(Boolean).length;
+  log(`Done — ${leads.length} leads from ${totalScanned} subscribers (${enrichedCount}/${toEnrich.length} enriched)`);
 
   return {
     leads,

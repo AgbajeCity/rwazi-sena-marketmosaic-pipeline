@@ -70,19 +70,20 @@ export async function getSubscription(subId: string): Promise<{ data: Subscriber
   });
 }
 
-export function extractOpenRate(detail: SubscriberDetail): number {
-  // Try different shapes of the beehiiv response
+type SubscriberLike = Pick<SubscriberDetail, "open_rate" | "click_rate" | "stats" | "custom_fields">;
+
+export function extractOpenRate(detail: SubscriberLike): number {
   if (typeof detail.open_rate === "number") return detail.open_rate;
   if (detail.stats?.email?.open_rate != null) return detail.stats.email.open_rate;
   return 0;
 }
 
-export function extractClickRate(detail: SubscriberDetail): number {
+export function extractClickRate(detail: SubscriberLike): number {
   if (typeof detail.click_rate === "number") return detail.click_rate;
   if (detail.stats?.email?.click_rate != null) return detail.stats.email.click_rate;
   return 0;
 }
 
-export function extractCustomField(detail: SubscriberDetail, name: string): string | null {
+export function extractCustomField(detail: SubscriberLike, name: string): string | null {
   return detail.custom_fields?.find((f) => f.name === name)?.value ?? null;
 }

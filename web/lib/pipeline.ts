@@ -73,8 +73,9 @@ export async function runPipeline(onProgress?: ProgressCallback): Promise<Pipeli
   const BATCH = 10;
   for (let i = 0; i < toEnrich.length; i += BATCH) {
     const batch = toEnrich.slice(i, i + BATCH);
-    const results = await Promise.all(batch.map((s) => getSubscription(s.id).catch(() => null)));
+    const results = await Promise.all(batch.map((s) => getSubscription(s.id).catch((err) => { log(`enrich error: ${err?.message ?? err}`); return null; })));
     details.push(...results);
+    break; // debug: only first batch
   }
 
   const leads: Lead[] = [];

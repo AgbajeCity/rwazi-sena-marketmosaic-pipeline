@@ -70,7 +70,12 @@ export async function getSubscription(subId: string): Promise<{ data: Subscriber
   });
 }
 
-type SubscriberLike = Pick<SubscriberDetail, "open_rate" | "click_rate" | "stats" | "custom_fields">;
+type SubscriberLike = {
+  open_rate?: number;
+  click_rate?: number;
+  stats?: { email?: { open_rate?: number; click_rate?: number } };
+  custom_fields?: { name: string; value: string }[];
+};
 
 export function extractOpenRate(detail: SubscriberLike): number {
   if (typeof detail.open_rate === "number") return detail.open_rate;

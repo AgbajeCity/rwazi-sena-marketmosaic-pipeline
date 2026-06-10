@@ -59,7 +59,7 @@ export async function listSubscribersPage(
     page: String(page),
     limit: String(limit),
     order_by: "created",
-    direction: "asc",
+    direction: "desc",
   });
 }
 

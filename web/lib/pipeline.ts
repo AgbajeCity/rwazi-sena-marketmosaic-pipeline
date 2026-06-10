@@ -85,7 +85,6 @@ export async function runPipeline(onProgress?: ProgressCallback): Promise<Pipeli
     const role = extractCustomField(d, "role");
 
     const seniority = classifySeniority(d.email, jobTitle, role);
-    if (seniority === "UNVERIFIED") continue;
 
     const score = engagementScore(openRate, clickRate, d.created_at);
     const tier = leadTier(score);

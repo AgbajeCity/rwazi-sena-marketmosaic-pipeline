@@ -9,7 +9,7 @@ export const WEIGHT_TENURE = 0.15;
 // Lead tiers
 export const TIER_TOP = 70;
 export const TIER_QUALIFIED = 50;
-export const TIER_WARM = 30;
+export const TIER_WARM = 10;
 
 // Tenure thresholds (days)
 export const TENURE_MIN_DAYS = 30;

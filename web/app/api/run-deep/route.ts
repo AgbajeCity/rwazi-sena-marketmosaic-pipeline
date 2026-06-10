@@ -32,9 +32,20 @@ async function handle(req: NextRequest) {
       return NextResponse.json({ ok: true, done: true, skipped: true });
     }
 
+    // Don't let the browser loop and the cron advance the same job at once.
+    if (job && job.state === "running" && job.lockedUntil && job.lockedUntil > Date.now()) {
+      return NextResponse.json({ ok: true, busy: true, done: false, message: job.message });
+    }
+
     if (!job || job.state === "done") job = newDeepJob();
 
+    // Claim the lock for the duration of this chunk (plus a small buffer) and
+    // persist it before doing any work, so a concurrent caller sees it.
+    job.lockedUntil = Date.now() + 55_000;
+    await saveJob(job);
+
     job = await runDeepChunk(job);
+    job.lockedUntil = null;
     await saveJob(job);
 
     // Mirror progress into the shared status the dashboard already polls.

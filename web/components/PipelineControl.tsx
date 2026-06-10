@@ -54,8 +54,10 @@ export function PipelineControl({ onComplete }: Props) {
         await fetchStatus();
         onComplete();
         if (!res.ok) break;
-        const body = (await res.json()) as { done?: boolean };
+        const body = (await res.json()) as { done?: boolean; busy?: boolean };
         if (body.done) break;
+        // Another worker (e.g. the cron) holds the lock — back off, then retry.
+        if (body.busy) await new Promise((r) => setTimeout(r, 5000));
       }
     } finally {
       setTriggering(false);

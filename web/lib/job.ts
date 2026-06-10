@@ -23,6 +23,9 @@ export interface JobState {
   startedAt: string;
   finishedAt: string | null;
   message: string;
+  // Epoch ms until which a chunk is in flight. Prevents the browser loop and
+  // the cron from advancing the same job concurrently. Null/past = free.
+  lockedUntil: number | null;
 }
 
 async function fetchPrivateBlob(url: string): Promise<Response> {

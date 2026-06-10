@@ -149,7 +149,21 @@ export function newDeepJob(): JobState {
     startedAt: new Date().toISOString(),
     finishedAt: null,
     message: "Starting deep scan…",
+    lockedUntil: null,
   };
+}
+
+// Drop duplicate leads by subscriber id (a restart or concurrent chunk could
+// otherwise enrich the same subscriber twice).
+function dedupeLeads(leads: Lead[]): Lead[] {
+  const seen = new Set<string>();
+  const out: Lead[] = [];
+  for (const l of leads) {
+    if (seen.has(l.id)) continue;
+    seen.add(l.id);
+    out.push(l);
+  }
+  return out;
 }
 
 // Advance a deep-scan job by one time-bounded chunk and return the new state.
@@ -160,15 +174,17 @@ export async function runDeepChunk(job: JobState): Promise<JobState> {
   const scanCutoff = Date.now() + CHUNK_BUDGET_MS / 2;
 
   // Phase 1 — list subscribers until the scan cutoff (or base exhausted).
+  const targetReached = () => job.pending.length + job.enrichedCount >= job.enrichTarget;
   while (
     !job.scanComplete &&
+    !targetReached() &&
     Date.now() < scanCutoff &&
     (DEEP_SCAN_MAX === 0 || job.totalScanned < DEEP_SCAN_MAX)
   ) {
     const resp = await listSubscribersPage(job.cursor ?? undefined, 100);
     job.totalScanned += resp.data.length;
     for (const sub of resp.data) {
-      if (isCorporate(sub.email) && job.pending.length + job.enrichedCount < job.enrichTarget) {
+      if (isCorporate(sub.email) && !targetReached()) {
         job.pending.push({ id: sub.id, email: sub.email });
       }
     }
@@ -178,6 +194,8 @@ export async function runDeepChunk(job: JobState): Promise<JobState> {
       job.cursor = resp.nextCursor;
     }
   }
+  // Enough candidates collected — no need to list the rest of the base.
+  if (targetReached()) job.scanComplete = true;
 
   // Phase 2 — enrich pending candidates (5 concurrent) until the deadline.
   const CONCURRENCY = 5;
@@ -198,7 +216,7 @@ export async function runDeepChunk(job: JobState): Promise<JobState> {
   if (job.scanComplete && job.pending.length === 0) {
     job.state = "done";
     job.finishedAt = new Date().toISOString();
-    job.leads.sort((a, b) => b.score - a.score);
+    job.leads = dedupeLeads(job.leads).sort((a, b) => b.score - a.score);
     job.message = `Completed — ${job.leads.length} leads from ${job.totalScanned.toLocaleString()} subscribers`;
   } else {
     const phase = job.scanComplete ? "Enriching" : "Scanning";
@@ -211,7 +229,7 @@ export async function runDeepChunk(job: JobState): Promise<JobState> {
 // Produce the dashboard-facing result from a finished (or in-flight) job.
 export function jobToResult(job: JobState): PipelineResult {
   return {
-    leads: [...job.leads].sort((a, b) => b.score - a.score),
+    leads: dedupeLeads(job.leads).sort((a, b) => b.score - a.score),
     totalProcessed: job.totalScanned,
     runDate: job.finishedAt ?? job.startedAt,
     durationMs: 0,

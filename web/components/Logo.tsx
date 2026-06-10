@@ -1,33 +1,39 @@
 /**
- * Rwazi / Market Mosaic brand mark — the orange asterisk-flower used on
- * newsletter.rwazi.com. Eight tapered petals radiating from a center,
- * rendered in the Market Mosaic coral-orange.
+ * Market Mosaic brand mark — orange rounded square with a white circular
+ * dot-mosaic (the "mosaic" motif from the official logo).
  */
-export function RwaziMark({ className = "h-6 w-6" }: { className?: string }) {
+export function MarketMosaicMark({ className = "h-9 w-9" }: { className?: string }) {
+  const cx = 50;
+  const cy = 50;
+  const dots: { cx: number; cy: number; r: number }[] = [{ cx, cy, r: 5 }];
+  const rings = [
+    { count: 8, radius: 17, r: 4.1, offset: 0 },
+    { count: 14, radius: 31, r: 3.6, offset: Math.PI / 14 },
+  ];
+  for (const ring of rings) {
+    for (let i = 0; i < ring.count; i++) {
+      const a = (i / ring.count) * Math.PI * 2 + ring.offset;
+      dots.push({
+        cx: cx + ring.radius * Math.cos(a),
+        cy: cy + ring.radius * Math.sin(a),
+        r: ring.r,
+      });
+    }
+  }
   return (
-    <svg className={className} viewBox="0 0 32 32" fill="none" aria-hidden="true">
-      <g fill="#e8553a">
-        {/* eight petals, each a thin rounded teardrop, rotated around center */}
-        {Array.from({ length: 8 }).map((_, i) => (
-          <rect
-            key={i}
-            x="14.6"
-            y="2"
-            width="2.8"
-            height="13"
-            rx="1.4"
-            transform={`rotate(${i * 45} 16 16)`}
-          />
-        ))}
-        <circle cx="16" cy="16" r="3.1" />
-      </g>
+    <svg className={className} viewBox="0 0 100 100" fill="none" aria-hidden="true">
+      <rect width="100" height="100" rx="22" fill="#F15A29" />
+      {dots.map((d, i) => (
+        <circle key={i} cx={d.cx} cy={d.cy} r={d.r} fill="#ffffff" />
+      ))}
     </svg>
   );
 }
 
 /**
- * Market Mosaic lockup: mark + "Market Mosaic" wordmark.
- * `tone` adapts text color for dark vs light bands.
+ * Full Market Mosaic logo lockup: mark + stacked "MARKET MOSAIC" wordmark +
+ * "By rwazi". `tone` adapts the wordmark color for dark vs light bands;
+ * the mark and the orange "rwazi" stay constant.
  */
 export function MarketMosaicLogo({
   tone = "light",
@@ -36,11 +42,19 @@ export function MarketMosaicLogo({
   tone?: "light" | "dark";
   className?: string;
 }) {
-  const title = tone === "light" ? "text-white" : "text-zinc-900";
+  const word = tone === "light" ? "text-white" : "text-zinc-900";
   return (
     <span className={`flex items-center gap-2.5 ${className}`}>
-      <RwaziMark className="h-7 w-7 shrink-0" />
-      <span className={`text-base font-bold tracking-tight leading-none ${title}`}>Market Mosaic</span>
+      <MarketMosaicMark className="h-9 w-9 shrink-0" />
+      <span className="flex items-center gap-2">
+        <span className={`font-extrabold uppercase leading-[0.92] tracking-tight ${word}`}>
+          <span className="block text-[15px]">Market</span>
+          <span className="block text-[15px]">Mosaic</span>
+        </span>
+        <span className={`text-sm font-bold ${word}`}>
+          By <span className="lowercase text-[#F15A29]">rwazi</span>
+        </span>
+      </span>
     </span>
   );
 }

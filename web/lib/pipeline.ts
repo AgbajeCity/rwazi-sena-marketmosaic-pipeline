@@ -44,39 +44,40 @@ export async function runPipeline(onProgress?: ProgressCallback): Promise<Pipeli
 
   log("Pass 1: scanning subscriber list...");
 
+  // Fetch page 1 to discover total_pages, then fetch remaining pages in parallel
+  const firstResp = await listSubscribersPage(1, 100);
+  const totalPages = Math.min(firstResp.total_pages ?? 1, MAX_SCAN_PAGES);
+
+  const allPages = [firstResp];
+  if (totalPages > 1) {
+    const rest = await Promise.all(
+      Array.from({ length: totalPages - 1 }, (_, i) => listSubscribersPage(i + 2, 100))
+    );
+    allPages.push(...rest);
+  }
+
   const candidates: SubscriberListItem[] = [];
-  let page = 1;
-  let totalPages = 1;
   let totalScanned = 0;
-
-  while (page <= totalPages && page <= MAX_SCAN_PAGES && candidates.length < MAX_ENRICHMENT) {
-    const resp = await listSubscribersPage(page, 100);
-    totalPages = resp.total_pages ?? 1;
+  for (const resp of allPages) {
     totalScanned += resp.data.length;
-
     for (const sub of resp.data) {
       if (isCorporate(sub.email)) candidates.push(sub);
     }
-
-    log(`  Page ${page}/${totalPages} — ${totalScanned} scanned, ${candidates.length} corporate candidates`);
-    page++;
-
-    if (candidates.length >= MAX_ENRICHMENT) break;
   }
 
+  log(`Pass 1 done — ${totalScanned} scanned, ${candidates.length} corporate candidates`);
+
   const toEnrich = candidates.slice(0, MAX_ENRICHMENT);
-  log(`Pass 2: enriching ${toEnrich.length} candidates...`);
+  log(`Pass 2: enriching ${toEnrich.length} candidates in parallel...`);
+
+  // Enrich all candidates concurrently
+  const details = await Promise.all(
+    toEnrich.map((s) => getSubscription(s.id).catch(() => null))
+  );
 
   const leads: Lead[] = [];
-  const BATCH = 20;
 
-  for (let i = 0; i < toEnrich.length; i += BATCH) {
-    const batch = toEnrich.slice(i, i + BATCH);
-    const details = await Promise.all(
-      batch.map((s) => getSubscription(s.id).catch(() => null)),
-    );
-
-    for (const result of details) {
+  for (const result of details) {
       if (!result) continue;
       const d = result.data;
       const openRate = extractOpenRate(d);
@@ -108,10 +109,9 @@ export async function runPipeline(onProgress?: ProgressCallback): Promise<Pipeli
         createdAt: d.created_at,
         subscriptionDays: days,
       });
-    }
-
-    log(`  Enriched ${Math.min(i + BATCH, toEnrich.length)}/${toEnrich.length} — ${leads.length} qualified so far`);
   }
+
+  log(`Pass 2 done — ${leads.length} qualified leads`);
 
   leads.sort((a, b) => b.score - a.score);
 

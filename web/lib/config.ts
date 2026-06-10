@@ -15,11 +15,11 @@ export const TIER_WARM = 30;
 export const TENURE_MIN_DAYS = 30;
 export const TENURE_MAX_DAYS = 180;
 
-// Max subscribers to enrich per run (keep low for Vercel Hobby 60s limit)
+// Max subscribers to enrich per run
 export const MAX_ENRICHMENT = 100;
 
-// Max pages to scan in Pass 1 (100 subs/page)
-export const MAX_SCAN_PAGES = 5;
+// Max pages to scan in Pass 1 (100 subs/page) — fetched in parallel so more is cheap
+export const MAX_SCAN_PAGES = 10;
 
 // Consumer email domains to exclude
 export const CONSUMER_DOMAINS = new Set([

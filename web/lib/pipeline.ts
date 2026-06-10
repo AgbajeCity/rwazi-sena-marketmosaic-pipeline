@@ -114,7 +114,9 @@ export async function runPipeline(onProgress?: ProgressCallback): Promise<Pipeli
 
   leads.sort((a, b) => b.score - a.score);
 
-  log(`Done — ${leads.length} leads from ${totalScanned} subscribers`);
+  // Debug: show sample scores to diagnose zero-lead issue
+  const sample = details.slice(0, 3).map(r => r ? `${r.data.email} open=${extractOpenRate(r.data)} click=${extractClickRate(r.data)}` : "null").join(" | ");
+  log(`Done — ${leads.length} leads from ${totalScanned} subscribers. Sample: ${sample}`);
 
   return {
     leads,

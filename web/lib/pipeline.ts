@@ -68,14 +68,17 @@ export async function runPipeline(onProgress?: ProgressCallback): Promise<Pipeli
   const toEnrich = candidates.slice(0, MAX_ENRICHMENT);
   log(`Pass 2: enriching ${toEnrich.length} candidates in parallel...`);
 
-  // Enrich in batches to stay under beehiiv rate limits while staying fast
-  const details: (Awaited<ReturnType<typeof getSubscription>> | null)[] = [];
-  const BATCH = 25;
-  for (let i = 0; i < toEnrich.length; i += BATCH) {
-    const batch = toEnrich.slice(i, i + BATCH);
-    const results = await Promise.all(batch.map((s) => getSubscription(s.id).catch(() => null)));
-    details.push(...results);
+  // Enrich with bounded concurrency — beehiiv allows ~180 req/min, max 5 concurrent recommended
+  const CONCURRENCY = 5;
+  const details: (Awaited<ReturnType<typeof getSubscription>> | null)[] = new Array(toEnrich.length).fill(null);
+  let next = 0;
+  async function worker() {
+    while (next < toEnrich.length) {
+      const idx = next++;
+      details[idx] = await getSubscription(toEnrich[idx].id).catch(() => null);
+    }
   }
+  await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()));
 
   const leads: Lead[] = [];
 

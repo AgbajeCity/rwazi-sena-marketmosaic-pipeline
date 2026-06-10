@@ -56,11 +56,19 @@ async function apiFetch<T>(path: string, params?: Record<string, QueryValue>): P
   return res.json() as Promise<T>;
 }
 
+interface RawListResponse {
+  data: SubscriberListItem[];
+  total_results?: number;
+  page?: number;
+  total_pages?: number;
+  pagination?: { total_results?: number; page?: number; total_pages?: number };
+}
+
 export async function listSubscribersPage(
   page: number,
   limit = 100,
 ): Promise<{ data: SubscriberListItem[]; total_results: number; page: number; total_pages: number }> {
-  return apiFetch(`/publications/${PUBLICATION_ID}/subscriptions`, {
+  const raw = await apiFetch<RawListResponse>(`/publications/${PUBLICATION_ID}/subscriptions`, {
     status: "active",
     page: String(page),
     limit: String(limit),
@@ -68,12 +76,23 @@ export async function listSubscribersPage(
     order_by: "created",
     direction: "asc",
   });
+  // beehiiv may return pagination metadata top-level or nested under `pagination`
+  return {
+    data: raw.data ?? [],
+    total_results: raw.total_results ?? raw.pagination?.total_results ?? 0,
+    page: raw.page ?? raw.pagination?.page ?? page,
+    total_pages: raw.total_pages ?? raw.pagination?.total_pages ?? 1,
+  };
 }
 
 export async function getSubscription(subId: string): Promise<{ data: SubscriberDetail }> {
-  return apiFetch(`/publications/${PUBLICATION_ID}/subscriptions/${subId}`, {
-    expand: ["stats", "custom_fields"],
-  });
+  // Response may be wrapped in `data` or returned flat — normalize to { data }
+  const raw = await apiFetch<SubscriberDetail | { data: SubscriberDetail }>(
+    `/publications/${PUBLICATION_ID}/subscriptions/${subId}`,
+    { expand: ["stats", "custom_fields"] },
+  );
+  const data = "data" in raw && raw.data ? raw.data : (raw as SubscriberDetail);
+  return { data };
 }
 
 type SubscriberLike = {

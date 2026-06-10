@@ -69,11 +69,11 @@ export function PipelineControl({ onComplete }: Props) {
   const isRunning = status?.state === "running" || triggering;
 
   return (
-    <div className="sena-card flex items-center gap-4 rounded-2xl border border-white/[0.07] px-5 py-4">
+    <div className="mm-card flex items-center gap-4 rounded-2xl px-5 py-4">
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <StatusBadge state={status?.state ?? "idle"} />
-          <span className="truncate text-sm font-medium text-zinc-300">
+          <span className="truncate text-sm font-medium text-zinc-700">
             {status?.message ?? "Ready to scan for decision-makers"}
           </span>
         </div>
@@ -93,7 +93,7 @@ export function PipelineControl({ onComplete }: Props) {
       <div className="flex shrink-0 gap-2">
         <a
           href="/api/export"
-          className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 px-3 py-2 text-sm font-medium text-zinc-300 transition-colors hover:border-white/30 hover:text-white"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-400 hover:bg-zinc-50"
         >
           <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -106,7 +106,7 @@ export function PipelineControl({ onComplete }: Props) {
           onClick={triggerDeepRun}
           disabled={isRunning}
           title="Scan the entire subscriber base (runs in resumable chunks)"
-          className="inline-flex items-center gap-1.5 rounded-lg border border-[#7df59e]/30 bg-[#7df59e]/10 px-3 py-2 text-sm font-medium text-[#7df59e] transition-colors hover:bg-[#7df59e]/15 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-[#e8553a]/30 bg-[#fdeee9] px-3 py-2 text-sm font-medium text-[#d4492f] transition-colors hover:bg-[#fbe1d8] disabled:cursor-not-allowed disabled:opacity-50"
         >
           <DeepIcon />
           Deep Scan
@@ -114,7 +114,7 @@ export function PipelineControl({ onComplete }: Props) {
         <button
           onClick={triggerRun}
           disabled={isRunning}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-[#7df59e] px-4 py-2 text-sm font-semibold text-[#08070d] shadow-[0_0_20px_-4px_rgba(125,245,158,0.5)] transition-colors hover:bg-[#6ce28d] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-[#e8553a] px-4 py-2 text-sm font-semibold text-white shadow-[0_2px_8px_-2px_rgba(232,85,58,0.5)] transition-colors hover:bg-[#d4492f] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
         >
           {isRunning ? (
             <>
@@ -135,10 +135,10 @@ export function PipelineControl({ onComplete }: Props) {
 
 function StatusBadge({ state }: { state: string }) {
   const config: Record<string, { dot: string; bg: string; text: string; label: string }> = {
-    idle:    { dot: "bg-zinc-500",                  bg: "bg-white/5",        text: "text-zinc-400",    label: "Idle" },
-    running: { dot: "bg-amber-400 animate-pulse",   bg: "bg-amber-400/10",   text: "text-amber-300",   label: "Running" },
-    done:    { dot: "bg-[#7df59e]",                 bg: "bg-[#7df59e]/10",   text: "text-[#7df59e]",   label: "Done" },
-    error:   { dot: "bg-red-400",                   bg: "bg-red-400/10",     text: "text-red-300",     label: "Error" },
+    idle:    { dot: "bg-zinc-400",                  bg: "bg-zinc-100",       text: "text-zinc-600",    label: "Idle" },
+    running: { dot: "bg-amber-500 animate-pulse",   bg: "bg-amber-50",       text: "text-amber-700",   label: "Running" },
+    done:    { dot: "bg-emerald-500",               bg: "bg-emerald-50",     text: "text-emerald-700", label: "Done" },
+    error:   { dot: "bg-red-500",                   bg: "bg-red-50",         text: "text-red-700",     label: "Error" },
   };
   const c = config[state] ?? config.idle;
   return (

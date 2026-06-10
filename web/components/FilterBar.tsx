@@ -15,10 +15,10 @@ interface Props {
 
 export function FilterBar({ filters, onChange, totalShown, totalLeads }: Props) {
   return (
-    <div className="sena-card rounded-2xl border border-white/[0.07] px-4 py-3">
+    <div className="mm-card rounded-2xl px-4 py-3">
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative">
-          <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-zinc-500">
+          <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-zinc-400">
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -29,7 +29,7 @@ export function FilterBar({ filters, onChange, totalShown, totalLeads }: Props) 
             placeholder="Search email or domain…"
             value={filters.search}
             onChange={(e) => onChange({ ...filters, search: e.target.value })}
-            className="w-56 rounded-lg border border-white/10 bg-white/[0.03] py-2 pl-9 pr-3 text-sm text-zinc-200 placeholder:text-zinc-600 focus:border-[#7df59e]/40 focus:outline-none focus:ring-1 focus:ring-[#7df59e]/40"
+            className="w-56 rounded-lg border border-zinc-300 bg-white py-2 pl-9 pr-3 text-sm text-zinc-800 placeholder:text-zinc-400 focus:border-[#e8553a]/50 focus:outline-none focus:ring-1 focus:ring-[#e8553a]/40"
           />
         </div>
 
@@ -55,8 +55,8 @@ export function FilterBar({ filters, onChange, totalShown, totalLeads }: Props) 
           ]}
         />
 
-        <span className="ml-auto rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-medium text-zinc-400">
-          Showing <span className="text-[#7df59e]">{totalShown.toLocaleString()}</span> of {totalLeads.toLocaleString()}
+        <span className="ml-auto rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs font-medium text-zinc-600">
+          Showing <span className="font-semibold text-[#e8553a]">{totalShown.toLocaleString()}</span> of {totalLeads.toLocaleString()}
         </span>
       </div>
     </div>
@@ -74,7 +74,7 @@ function Select({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-zinc-200 focus:border-[#7df59e]/40 focus:outline-none focus:ring-1 focus:ring-[#7df59e]/40 [&>option]:bg-[#14141e] [&>option]:text-zinc-200"
+      className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-[#e8553a]/50 focus:outline-none focus:ring-1 focus:ring-[#e8553a]/40"
     >
       {options.map((o) => (
         <option key={o.value} value={o.value}>{o.label}</option>

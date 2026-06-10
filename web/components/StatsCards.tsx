@@ -63,40 +63,40 @@ export function StatsCards({ leads, totalProcessed, runDate }: Props) {
       label: "Total Prospects",
       value: leads.length,
       sub: `from ${totalProcessed.toLocaleString()} scanned`,
-      accent: "text-[#7df59e]",
-      ring: "border-[#7df59e]/25 bg-[#7df59e]/10",
+      accent: "text-[#e8553a]",
+      ring: "border-[#e8553a]/20 bg-[#fdeee9]",
       icon: <UsersIcon />,
     },
     {
       label: "High-Priority (≥70)",
       value: top,
       sub: "Book a tailored demo",
-      accent: "text-emerald-300",
-      ring: "border-emerald-400/25 bg-emerald-400/10",
+      accent: "text-emerald-600",
+      ring: "border-emerald-500/20 bg-emerald-50",
       icon: <StarIcon />,
     },
     {
       label: "Qualified (50–69)",
       value: qualified,
       sub: "Decision-ready nurture",
-      accent: "text-sky-300",
-      ring: "border-sky-400/25 bg-sky-400/10",
+      accent: "text-sky-600",
+      ring: "border-sky-500/20 bg-sky-50",
       icon: <CheckCircleIcon />,
     },
     {
       label: "Warm (20–49)",
       value: warm,
       sub: "Monitor market signals",
-      accent: "text-amber-300",
-      ring: "border-amber-400/25 bg-amber-400/10",
+      accent: "text-amber-600",
+      ring: "border-amber-500/20 bg-amber-50",
       icon: <FlameIcon />,
     },
     {
       label: "Senior Executives",
       value: highSeniority,
       sub: "C-suite & VP-level",
-      accent: "text-violet-300",
-      ring: "border-violet-400/25 bg-violet-400/10",
+      accent: "text-violet-600",
+      ring: "border-violet-500/20 bg-violet-50",
       icon: <ShieldIcon />,
     },
   ];
@@ -105,20 +105,20 @@ export function StatsCards({ leads, totalProcessed, runDate }: Props) {
     <div className="space-y-3">
       {runDate && (
         <p className="text-xs text-zinc-500">
-          Last run: <span className="text-zinc-300">{new Date(runDate).toLocaleString()}</span>
+          Last run: <span className="font-medium text-zinc-700">{new Date(runDate).toLocaleString()}</span>
         </p>
       )}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {cards.map((c) => (
           <div
             key={c.label}
-            className="sena-card rounded-2xl border border-white/[0.07] p-4 transition-colors hover:border-white/15"
+            className="mm-card rounded-2xl p-4 transition-shadow hover:shadow-md"
           >
             <div className={`mb-3 inline-flex h-9 w-9 items-center justify-center rounded-xl border ${c.ring} ${c.accent}`}>
               {c.icon}
             </div>
             <div className={`text-3xl font-bold tracking-tight ${c.accent}`}>{c.value.toLocaleString()}</div>
-            <div className="mt-1 text-sm font-medium text-zinc-200">{c.label}</div>
+            <div className="mt-1 text-sm font-medium text-zinc-800">{c.label}</div>
             <div className="mt-0.5 text-xs text-zinc-500">{c.sub}</div>
           </div>
         ))}

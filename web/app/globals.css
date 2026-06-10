@@ -1,16 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  /* Sena dark palette */
-  --background: #08070d;
-  --surface: #0f0f17;
-  --surface-2: #14141e;
-  --border: rgba(255, 255, 255, 0.07);
-  --foreground: #f4f4f5;
-  --muted: #a1a1aa;
-  --accent: #7df59e;       /* Sena mint green */
-  --accent-dim: #6ce28d;
-  --violet: #856de6;       /* Sena "Decision AI" pill */
+  /* ── Market Mosaic palette (newsletter.rwazi.com) ───────────────────── */
+  --background: #ffffff;
+  --surface: #ffffff;
+  --surface-soft: #f6f5f2;   /* light cream section bands */
+  --surface-2: #faf9f7;
+  --border: #e7e3dc;          /* warm light border */
+  --foreground: #18181b;      /* near-black ink */
+  --muted: #6b6b6b;
+  --ink: #121212;             /* dark nav / footer bands */
+  --accent: #e8553a;          /* Market Mosaic coral-orange */
+  --accent-dim: #d4492f;
+  --accent-soft: #fdeee9;     /* orange tint for chips on light bg */
 }
 
 @theme inline {
@@ -18,7 +20,7 @@
   --color-surface: var(--surface);
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
-  --color-violet: var(--violet);
+  --color-ink: var(--ink);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -35,20 +37,21 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Perspective grid glow used in the hero band, echoing the Sena landing page */
-.sena-hero {
+/* Dark hero band, echoing the Market Mosaic site header image */
+.mm-hero {
   background:
-    radial-gradient(120% 90% at 50% -10%, rgba(125, 245, 158, 0.10) 0%, rgba(8, 7, 13, 0) 55%),
-    radial-gradient(90% 70% at 50% 120%, rgba(133, 109, 230, 0.10) 0%, rgba(8, 7, 13, 0) 60%),
-    #08070d;
+    radial-gradient(120% 120% at 50% -20%, rgba(232, 85, 58, 0.18) 0%, rgba(18, 18, 18, 0) 50%),
+    linear-gradient(180deg, #141414 0%, #1c1b1a 100%);
 }
 
-/* Subtle top-light sheen for cards */
-.sena-card {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0%, rgba(255, 255, 255, 0) 40%), var(--surface);
+/* White content card with the soft warm border MM uses */
+.mm-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 2px rgba(17, 17, 17, 0.04), 0 1px 3px rgba(17, 17, 17, 0.03);
 }
 
-/* Thin custom scrollbar for the dark theme */
+/* Light cream scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -57,12 +60,12 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(17, 17, 17, 0.18);
   border-radius: 9999px;
   border: 2px solid transparent;
   background-clip: content-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(17, 17, 17, 0.3);
   background-clip: content-box;
 }

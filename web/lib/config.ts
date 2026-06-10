@@ -15,11 +15,11 @@ export const TIER_WARM = 30;
 export const TENURE_MIN_DAYS = 30;
 export const TENURE_MAX_DAYS = 180;
 
-// Max subscribers to enrich per run
+// Max leads to return after scoring
 export const MAX_ENRICHMENT = 100;
 
-// Max pages to scan in Pass 1 (100 subs/page) — fetched in parallel so more is cheap
-export const MAX_SCAN_PAGES = 10;
+// Pages to fetch in parallel (100 subs/page) — all fetched simultaneously
+export const MAX_SCAN_PAGES = 5;
 
 // Consumer email domains to exclude
 export const CONSUMER_DOMAINS = new Set([

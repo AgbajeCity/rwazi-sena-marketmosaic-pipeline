@@ -16,6 +16,10 @@ export interface SubscriberListItem {
   email: string;
   created_at: string;
   status: string;
+  custom_fields?: { name: string; value: string }[];
+  stats?: { email?: { open_rate?: number; click_rate?: number } };
+  open_rate?: number;
+  click_rate?: number;
 }
 
 export interface SubscriberDetail {
@@ -54,9 +58,9 @@ export async function listSubscribersPage(
     status: "active",
     page: String(page),
     limit: String(limit),
-    // oldest first = highest tenure score
     order_by: "created",
     direction: "asc",
+    expand: "stats,custom_fields",
   });
 }
 

@@ -1,11 +1,9 @@
 import { CONSUMER_DOMAINS, MAX_ENRICHMENT, MAX_SCAN_PAGES } from "./config";
 import {
   listSubscribersPage,
-  getSubscription,
   extractOpenRate,
   extractClickRate,
   extractCustomField,
-  SubscriberListItem,
 } from "./beehiiv";
 import { engagementScore, leadTier } from "./scorer";
 import { classifySeniority, domain, SeniorityTier } from "./seniority";
@@ -42,9 +40,9 @@ export async function runPipeline(onProgress?: ProgressCallback): Promise<Pipeli
   const start = Date.now();
   const log = (msg: string) => onProgress?.(msg);
 
-  log("Pass 1: scanning subscriber list...");
+  log("Fetching subscribers...");
 
-  // Fetch page 1 to discover total_pages, then fetch remaining pages in parallel
+  // Fetch page 1 to discover total_pages, then fetch all pages in parallel
   const firstResp = await listSubscribersPage(1, 100);
   const totalPages = Math.min(firstResp.total_pages ?? 1, MAX_SCAN_PAGES);
 
@@ -56,49 +54,35 @@ export async function runPipeline(onProgress?: ProgressCallback): Promise<Pipeli
     allPages.push(...rest);
   }
 
-  const candidates: SubscriberListItem[] = [];
-  let totalScanned = 0;
-  for (const resp of allPages) {
-    totalScanned += resp.data.length;
-    for (const sub of resp.data) {
-      if (isCorporate(sub.email)) candidates.push(sub);
-    }
-  }
-
-  log(`Pass 1 done — ${totalScanned} scanned, ${candidates.length} corporate candidates`);
-
-  const toEnrich = candidates.slice(0, MAX_ENRICHMENT);
-  log(`Pass 2: enriching ${toEnrich.length} candidates in parallel...`);
-
-  // Enrich all candidates concurrently
-  const details = await Promise.all(
-    toEnrich.map((s) => getSubscription(s.id).catch(() => null))
-  );
+  log(`Scoring ${totalPages * 100} subscribers...`);
 
   const leads: Lead[] = [];
+  let totalScanned = 0;
 
-  for (const result of details) {
-      if (!result) continue;
-      const d = result.data;
-      const openRate = extractOpenRate(d);
-      const clickRate = extractClickRate(d);
-      const jobTitle = extractCustomField(d, "job_title") ?? extractCustomField(d, "Job Title");
-      const company = extractCustomField(d, "company") ?? extractCustomField(d, "Company");
-      const role = extractCustomField(d, "role");
+  for (const resp of allPages) {
+    for (const sub of resp.data) {
+      totalScanned++;
+      if (!isCorporate(sub.email)) continue;
 
-      const seniority = classifySeniority(d.email, jobTitle, role);
+      const openRate = extractOpenRate(sub);
+      const clickRate = extractClickRate(sub);
+      const jobTitle = extractCustomField(sub, "job_title") ?? extractCustomField(sub, "Job Title");
+      const company = extractCustomField(sub, "company") ?? extractCustomField(sub, "Company");
+      const role = extractCustomField(sub, "role");
+
+      const seniority = classifySeniority(sub.email, jobTitle, role);
       if (seniority === "UNVERIFIED") continue;
 
-      const score = engagementScore(openRate, clickRate, d.created_at);
+      const score = engagementScore(openRate, clickRate, sub.created_at);
       const tier = leadTier(score);
       if (tier === "excluded") continue;
 
-      const days = Math.floor((Date.now() - new Date(d.created_at).getTime()) / (1000 * 60 * 60 * 24));
+      const days = Math.floor((Date.now() - new Date(sub.created_at).getTime()) / (1000 * 60 * 60 * 24));
 
       leads.push({
-        id: d.id,
-        email: d.email,
-        domain: domain(d.email),
+        id: sub.id,
+        email: sub.email,
+        domain: domain(sub.email),
         company,
         jobTitle,
         seniorityTier: seniority,
@@ -106,17 +90,19 @@ export async function runPipeline(onProgress?: ProgressCallback): Promise<Pipeli
         openRate,
         clickRate,
         tier,
-        createdAt: d.created_at,
+        createdAt: sub.created_at,
         subscriptionDays: days,
       });
+    }
   }
 
-  log(`Pass 2 done — ${leads.length} qualified leads`);
-
   leads.sort((a, b) => b.score - a.score);
+  const topLeads = leads.slice(0, MAX_ENRICHMENT);
+
+  log(`Done — ${topLeads.length} qualified leads from ${totalScanned} subscribers`);
 
   return {
-    leads,
+    leads: topLeads,
     totalProcessed: totalScanned,
     runDate: new Date().toISOString(),
     durationMs: Date.now() - start,

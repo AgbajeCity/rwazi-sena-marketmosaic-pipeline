@@ -3,7 +3,7 @@
 import { Lead } from "@/lib/pipeline";
 
 const TIER_STYLES: Record<string, string> = {
-  top: "bg-[#fdeee9] text-[#d4492f] border border-[#e8553a]/25",
+  top: "bg-[#fef0eb] text-[#d94d22] border border-[#F15A29]/25",
   qualified: "bg-emerald-50 text-emerald-700 border border-emerald-500/20",
   warm: "bg-amber-50 text-amber-700 border border-amber-500/20",
   excluded: "bg-zinc-100 text-zinc-500 border border-zinc-200",
@@ -90,7 +90,7 @@ export function LeadsTable({ leads }: Props) {
                 </span>
               </td>
               <td className="px-4 py-3 text-right">
-                <span className="font-bold tabular-nums text-[#e8553a]">{lead.score.toFixed(1)}</span>
+                <span className="font-bold tabular-nums text-[#F15A29]">{lead.score.toFixed(1)}</span>
               </td>
               <td className="px-4 py-3 text-right tabular-nums text-zinc-600">
                 {lead.openRate.toFixed(1)}%

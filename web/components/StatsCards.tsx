@@ -63,8 +63,8 @@ export function StatsCards({ leads, totalProcessed, runDate }: Props) {
       label: "Total Prospects",
       value: leads.length,
       sub: `from ${totalProcessed.toLocaleString()} scanned`,
-      accent: "text-[#e8553a]",
-      ring: "border-[#e8553a]/20 bg-[#fdeee9]",
+      accent: "text-[#F15A29]",
+      ring: "border-[#F15A29]/20 bg-[#fef0eb]",
       icon: <UsersIcon />,
     },
     {

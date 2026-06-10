@@ -10,9 +10,9 @@
   --foreground: #18181b;      /* near-black ink */
   --muted: #6b6b6b;
   --ink: #121212;             /* dark nav / footer bands */
-  --accent: #e8553a;          /* Market Mosaic coral-orange */
-  --accent-dim: #d4492f;
-  --accent-soft: #fdeee9;     /* orange tint for chips on light bg */
+  --accent: #F15A29;          /* Market Mosaic orange — exact logo colour */
+  --accent-dim: #d94d22;
+  --accent-soft: #fef0eb;     /* orange tint for chips on light bg */
 }
 
 @theme inline {

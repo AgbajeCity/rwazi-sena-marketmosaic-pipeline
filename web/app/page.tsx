@@ -32,7 +32,8 @@ export default function DashboardPage() {
     if (filters.seniority && l.seniorityTier !== filters.seniority) return false;
     if (filters.search) {
       const q = filters.search.toLowerCase();
-      if (!l.email.toLowerCase().includes(q) && !l.domain.toLowerCase().includes(q)) return false;
+      const haystack = [l.email, l.domain, l.company ?? "", l.jobTitle ?? ""].join(" ").toLowerCase();
+      if (!haystack.includes(q)) return false;
     }
     return true;
   });
@@ -58,13 +59,13 @@ export default function DashboardPage() {
       <header className="mm-hero border-b border-black/10">
         <div className="mx-auto max-w-7xl px-6">
           <div className="pb-14 pt-12 text-center">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-[#f08a72]">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-[#f5956b]">
               Sena Prospect Pipeline
             </p>
             <h1 className="mx-auto max-w-3xl text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl">
               Everyone has subscribers.
               <br />
-              <span className="text-[#e8553a]">Few know which ones decide.</span>
+              <span className="text-[#F15A29]">Few know which ones decide.</span>
             </h1>
             <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-zinc-300 sm:text-base">
               Sena scores Market Mosaic subscribers on real engagement signals and surfaces the
@@ -74,12 +75,12 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl space-y-6 px-6 py-8">
+      <main className="mx-auto max-w-7xl space-y-5 px-6 py-8">
         <PipelineControl onComplete={fetchLeads} />
 
         {loading ? (
           <div className="flex flex-col items-center justify-center gap-3 py-24">
-            <svg className="h-8 w-8 animate-spin text-[#e8553a]" viewBox="0 0 24 24" fill="none">
+            <svg className="h-8 w-8 animate-spin text-[#F15A29]" viewBox="0 0 24 24" fill="none">
               <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
               <path className="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
@@ -122,8 +123,8 @@ function EmptyState() {
   return (
     <div className="mm-card rounded-2xl border-dashed p-16 text-center">
       <div className="mb-4 flex justify-center">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[#e8553a]/20 bg-[#fdeee9]">
-          <svg className="h-7 w-7 text-[#e8553a]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[#F15A29]/20 bg-[#fef0eb]">
+          <svg className="h-7 w-7 text-[#F15A29]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
             <circle cx="9" cy="7" r="4" />
             <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -133,7 +134,7 @@ function EmptyState() {
       </div>
       <h2 className="mb-1 text-lg font-semibold text-zinc-900">No prospects yet</h2>
       <p className="mx-auto max-w-sm text-sm text-zinc-500">
-        Click <strong className="text-[#e8553a]">Run Pipeline</strong> to scan Market Mosaic subscribers and
+        Click <strong className="text-[#F15A29]">Run Pipeline</strong> to scan Market Mosaic subscribers and
         surface the senior executives ready to decide with confidence.
       </p>
     </div>

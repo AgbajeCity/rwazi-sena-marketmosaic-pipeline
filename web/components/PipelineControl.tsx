@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { RunStatus } from "@/lib/storage";
 
 interface Props {
@@ -10,29 +10,32 @@ interface Props {
 export function PipelineControl({ onComplete }: Props) {
   const [status, setStatus] = useState<RunStatus | null>(null);
   const [triggering, setTriggering] = useState(false);
+  // Keep a stable ref so effects that call onComplete don't re-run on every render.
+  const onCompleteRef = useRef(onComplete);
+  useEffect(() => { onCompleteRef.current = onComplete; }, [onComplete]);
 
   const fetchStatus = useCallback(async () => {
     const res = await fetch("/api/status");
     if (res.ok) setStatus(await res.json());
   }, []);
 
-  useEffect(() => {
-    fetchStatus();
-  }, [fetchStatus]);
+  useEffect(() => { fetchStatus(); }, [fetchStatus]);
 
   // Poll while running
   useEffect(() => {
     if (status?.state !== "running") return;
-    const id = setInterval(async () => {
-      await fetchStatus();
-    }, 3000);
+    const id = setInterval(fetchStatus, 3000);
     return () => clearInterval(id);
   }, [status?.state, fetchStatus]);
 
-  // Reload leads when done
+  // Reload leads once when a run finishes (track previous state to fire exactly once).
+  const prevStateRef = useRef<string | null>(null);
   useEffect(() => {
-    if (status?.state === "done") onComplete();
-  }, [status?.state, onComplete]);
+    if (status?.state === "done" && prevStateRef.current === "running") {
+      onCompleteRef.current();
+    }
+    prevStateRef.current = status?.state ?? null;
+  }, [status?.state]);
 
   const triggerRun = async () => {
     setTriggering(true);
@@ -47,22 +50,19 @@ export function PipelineControl({ onComplete }: Props) {
     setTriggering(true);
     try {
       let first = true;
-      // guard against an unexpected runaway; ~250 chunks is plenty for 129K
       for (let i = 0; i < 250; i++) {
         const res = await fetch(`/api/run-deep${first ? "?restart=1" : ""}`, { method: "POST" });
         first = false;
-        await fetchStatus();
-        onComplete();
         if (!res.ok) break;
         const body = (await res.json()) as { done?: boolean; busy?: boolean };
+        await fetchStatus();
         if (body.done) break;
-        // Another worker (e.g. the cron) holds the lock — back off, then retry.
-        if (body.busy) await new Promise((r) => setTimeout(r, 5000));
+        // Lock held by cron — back off before retrying.
+        await new Promise((r) => setTimeout(r, body.busy ? 5000 : 500));
       }
     } finally {
       setTriggering(false);
-      fetchStatus();
-      onComplete();
+      await fetchStatus();
     }
   };
 
@@ -106,7 +106,7 @@ export function PipelineControl({ onComplete }: Props) {
           onClick={triggerDeepRun}
           disabled={isRunning}
           title="Scan the entire subscriber base (runs in resumable chunks)"
-          className="inline-flex items-center gap-1.5 rounded-lg border border-[#e8553a]/30 bg-[#fdeee9] px-3 py-2 text-sm font-medium text-[#d4492f] transition-colors hover:bg-[#fbe1d8] disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-[#F15A29]/30 bg-[#fef0eb] px-3 py-2 text-sm font-medium text-[#d94d22] transition-colors hover:bg-[#fde5db] disabled:cursor-not-allowed disabled:opacity-50"
         >
           <DeepIcon />
           Deep Scan
@@ -114,7 +114,7 @@ export function PipelineControl({ onComplete }: Props) {
         <button
           onClick={triggerRun}
           disabled={isRunning}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-[#e8553a] px-4 py-2 text-sm font-semibold text-white shadow-[0_2px_8px_-2px_rgba(232,85,58,0.5)] transition-colors hover:bg-[#d4492f] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-[#F15A29] px-4 py-2 text-sm font-semibold text-white shadow-[0_2px_8px_-2px_rgba(241,90,41,0.5)] transition-colors hover:bg-[#d94d22] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
         >
           {isRunning ? (
             <>

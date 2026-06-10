@@ -26,10 +26,10 @@ export function FilterBar({ filters, onChange, totalShown, totalLeads }: Props) 
           </span>
           <input
             type="text"
-            placeholder="Search email or domain…"
+            placeholder="Search email, company, title…"
             value={filters.search}
             onChange={(e) => onChange({ ...filters, search: e.target.value })}
-            className="w-56 rounded-lg border border-zinc-300 bg-white py-2 pl-9 pr-3 text-sm text-zinc-800 placeholder:text-zinc-400 focus:border-[#e8553a]/50 focus:outline-none focus:ring-1 focus:ring-[#e8553a]/40"
+            className="w-56 rounded-lg border border-zinc-300 bg-white py-2 pl-9 pr-3 text-sm text-zinc-800 placeholder:text-zinc-400 focus:border-[#F15A29]/50 focus:outline-none focus:ring-1 focus:ring-[#F15A29]/40"
           />
         </div>
 
@@ -56,7 +56,7 @@ export function FilterBar({ filters, onChange, totalShown, totalLeads }: Props) 
         />
 
         <span className="ml-auto rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs font-medium text-zinc-600">
-          Showing <span className="font-semibold text-[#e8553a]">{totalShown.toLocaleString()}</span> of {totalLeads.toLocaleString()}
+          Showing <span className="font-semibold text-[#F15A29]">{totalShown.toLocaleString()}</span> of {totalLeads.toLocaleString()}
         </span>
       </div>
     </div>
@@ -74,7 +74,7 @@ function Select({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-[#e8553a]/50 focus:outline-none focus:ring-1 focus:ring-[#e8553a]/40"
+      className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 focus:border-[#F15A29]/50 focus:outline-none focus:ring-1 focus:ring-[#F15A29]/40"
     >
       {options.map((o) => (
         <option key={o.value} value={o.value}>{o.label}</option>

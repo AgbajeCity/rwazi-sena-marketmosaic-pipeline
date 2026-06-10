@@ -8,9 +8,12 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 // Advance the chunked deep-scan job by one time-bounded slice.
-// POST            → resume the in-flight job (or start one if none/finished)
+//
+// POST            → resume in-flight job, or start a new one if none exists
 // POST ?restart=1 → discard any existing job and start fresh
-export async function POST(req: NextRequest) {
+// GET             → same as POST; used by Vercel Cron (which only sends GET)
+//                   GET with a finished job is a no-op (returns done:true)
+async function handle(req: NextRequest) {
   if (!process.env.BEEHIIV_API_KEY) {
     return NextResponse.json({ ok: false, error: "BEEHIIV_API_KEY is not set" }, { status: 500 });
   }
@@ -23,6 +26,12 @@ export async function POST(req: NextRequest) {
 
   try {
     let job = restart ? null : await loadJob();
+
+    // Cron GET: if there's nothing to do, return immediately without starting a new job.
+    if (req.method === "GET" && (!job || job.state === "done")) {
+      return NextResponse.json({ ok: true, done: true, skipped: true });
+    }
+
     if (!job || job.state === "done") job = newDeepJob();
 
     job = await runDeepChunk(job);
@@ -61,3 +70,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: msg }, { status: 500 });
   }
 }
+
+export const GET = handle;
+export const POST = handle;

@@ -3,6 +3,10 @@
     {
       "path": "/api/run",
       "schedule": "0 7 * * 1"
+    },
+    {
+      "path": "/api/run-deep",
+      "schedule": "*/10 * * * *"
     }
   ]
 }

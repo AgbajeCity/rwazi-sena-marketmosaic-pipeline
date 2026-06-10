@@ -1,10 +1,15 @@
 export const PUBLICATION_ID = "pub_422b220b-eb3d-48b7-8341-ba44f5e2cdc7";
 export const BEEHIIV_API_BASE = "https://api.beehiiv.com/v2";
 
-// Scoring weights
-export const WEIGHT_OPEN_RATE = 0.40;
-export const WEIGHT_CLICK_RATE = 0.45;
+// Scoring weights (sum to 1.0)
+export const WEIGHT_OPEN_RATE = 0.30;
+export const WEIGHT_CLICK_RATE = 0.25;
 export const WEIGHT_TENURE = 0.15;
+export const WEIGHT_SENIORITY = 0.30;
+
+// Engagement normalization — open/click rates that earn full marks
+export const OPEN_RATE_TARGET = 50;  // 50% open rate = full open score
+export const CLICK_RATE_TARGET = 10; // 10% click rate = full click score
 
 // Lead tiers (match dashboard labels: Warm 30–49, Qualified 50–69, High-Priority ≥70)
 export const TIER_TOP = 70;

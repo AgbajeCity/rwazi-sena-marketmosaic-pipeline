@@ -1,29 +1,44 @@
 import {
-  WEIGHT_OPEN_RATE, WEIGHT_CLICK_RATE, WEIGHT_TENURE,
+  WEIGHT_OPEN_RATE, WEIGHT_CLICK_RATE, WEIGHT_TENURE, WEIGHT_SENIORITY,
+  OPEN_RATE_TARGET, CLICK_RATE_TARGET,
   TENURE_MIN_DAYS, TENURE_MAX_DAYS,
   TIER_TOP, TIER_QUALIFIED, TIER_WARM,
 } from "./config";
+import { SeniorityTier } from "./seniority";
 
-export function tenureScore(createdAt: string | null | undefined): number {
-  if (!createdAt) return 0;
-  const created = new Date(createdAt);
-  if (isNaN(created.getTime())) return 0;
-  const days = (Date.now() - created.getTime()) / (1000 * 60 * 60 * 24);
+// createdMs: subscription creation time in epoch milliseconds
+export function tenureScore(createdMs: number): number {
+  if (!createdMs || isNaN(createdMs)) return 0;
+  const days = (Date.now() - createdMs) / (1000 * 60 * 60 * 24);
   if (days < TENURE_MIN_DAYS) return 0;
   if (days >= TENURE_MAX_DAYS) return 1;
   return (days - TENURE_MIN_DAYS) / (TENURE_MAX_DAYS - TENURE_MIN_DAYS);
 }
 
+function seniorityScore(tier: SeniorityTier): number {
+  switch (tier) {
+    case "HIGH_SENIORITY": return 1;
+    case "PROBABLE_SENIORITY": return 0.5;
+    case "INFERRED": return 0.25;
+    default: return 0;
+  }
+}
+
 export function engagementScore(
   openRate: number,
   clickRate: number,
-  createdAt: string | null | undefined,
+  createdMs: number,
+  seniority: SeniorityTier,
 ): number {
-  const ts = tenureScore(createdAt);
+  const openComponent = Math.min(openRate / OPEN_RATE_TARGET, 1);
+  const clickComponent = Math.min(clickRate / CLICK_RATE_TARGET, 1);
+  const tenureComponent = tenureScore(createdMs);
+  const seniorityComponent = seniorityScore(seniority);
   return (
-    (openRate / 100) * WEIGHT_OPEN_RATE +
-    (clickRate / 100) * WEIGHT_CLICK_RATE +
-    ts * WEIGHT_TENURE
+    openComponent * WEIGHT_OPEN_RATE +
+    clickComponent * WEIGHT_CLICK_RATE +
+    tenureComponent * WEIGHT_TENURE +
+    seniorityComponent * WEIGHT_SENIORITY
   ) * 100;
 }
 

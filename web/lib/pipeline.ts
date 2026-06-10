@@ -44,31 +44,24 @@ export async function runPipeline(onProgress?: ProgressCallback): Promise<Pipeli
 
   log("Pass 1: scanning subscriber list...");
 
-  // Fetch page 1 to get total_pages, then fetch all remaining pages in parallel
-  const firstResp = await listSubscribersPage(1, 100);
-  const totalPages = Math.min(firstResp.total_pages ?? 1, MAX_SCAN_PAGES);
-
-  const allPages = [firstResp];
-  if (totalPages > 1) {
-    const rest = await Promise.all(
-      Array.from({ length: totalPages - 1 }, (_, i) => listSubscribersPage(i + 2, 100))
-    );
-    allPages.push(...rest);
-  }
-
+  // Pass 1 — cursor-paginate to collect corporate-domain candidates
   const candidates: SubscriberListItem[] = [];
   let totalScanned = 0;
-  for (const resp of allPages) {
+  let cursor: string | undefined;
+  for (let p = 0; p < MAX_SCAN_PAGES; p++) {
+    const resp = await listSubscribersPage(cursor, 100);
     totalScanned += resp.data.length;
     for (const sub of resp.data) {
       if (isCorporate(sub.email)) candidates.push(sub);
     }
+    if (!resp.hasMore || !resp.nextCursor) break;
+    cursor = resp.nextCursor;
   }
 
   const toEnrich = candidates.slice(0, MAX_ENRICHMENT);
-  log(`Pass 2: enriching ${toEnrich.length} candidates in parallel...`);
+  log(`Pass 2: enriching ${toEnrich.length} candidates...`);
 
-  // Enrich with bounded concurrency — beehiiv allows ~180 req/min, max 5 concurrent recommended
+  // Pass 2 — enrich with bounded concurrency (beehiiv ~180 req/min, 5 concurrent)
   const CONCURRENCY = 5;
   const details: (Awaited<ReturnType<typeof getSubscription>> | null)[] = new Array(toEnrich.length).fill(null);
   let next = 0;
@@ -87,17 +80,18 @@ export async function runPipeline(onProgress?: ProgressCallback): Promise<Pipeli
     const d = result.data;
     const openRate = extractOpenRate(d);
     const clickRate = extractClickRate(d);
-    const jobTitle = extractCustomField(d, "job_title") ?? extractCustomField(d, "Job Title");
-    const company = extractCustomField(d, "company") ?? extractCustomField(d, "Company");
-    const role = extractCustomField(d, "role");
+    const jobTitle = extractCustomField(d, "Job Title") ?? extractCustomField(d, "job_title");
+    const company = extractCustomField(d, "Company") ?? extractCustomField(d, "company");
+    const role = extractCustomField(d, "Role") ?? extractCustomField(d, "role");
 
     const seniority = classifySeniority(d.email, jobTitle, role);
 
-    const score = engagementScore(openRate, clickRate, d.created_at);
+    const createdMs = (d.created ?? 0) * 1000;
+    const score = engagementScore(openRate, clickRate, createdMs, seniority);
     const tier = leadTier(score);
     if (tier === "excluded") continue;
 
-    const days = Math.floor((Date.now() - new Date(d.created_at).getTime()) / (1000 * 60 * 60 * 24));
+    const days = createdMs ? Math.floor((Date.now() - createdMs) / (1000 * 60 * 60 * 24)) : 0;
 
     leads.push({
       id: d.id,
@@ -107,10 +101,10 @@ export async function runPipeline(onProgress?: ProgressCallback): Promise<Pipeli
       jobTitle,
       seniorityTier: seniority,
       score: Math.round(score * 10) / 10,
-      openRate,
-      clickRate,
+      openRate: Math.round(openRate * 10) / 10,
+      clickRate: Math.round(clickRate * 10) / 10,
       tier,
-      createdAt: d.created_at,
+      createdAt: createdMs ? new Date(createdMs).toISOString() : new Date().toISOString(),
       subscriptionDays: days,
     });
   }

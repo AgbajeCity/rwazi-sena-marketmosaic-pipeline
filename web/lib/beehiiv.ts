@@ -14,13 +14,15 @@ const headers = () => ({
 export interface SubscriberListItem {
   id: string;
   email: string;
-  created_at?: string;
+  created: number; // epoch seconds
   status: string;
 }
 
 export interface SubscriberStats {
-  total_delivered?: number;
+  total_sent?: number;
+  total_received?: number;
   total_unique_opened?: number;
+  total_clicked?: number;
   open_rate?: number;
   click_rate?: number;
 }
@@ -28,7 +30,7 @@ export interface SubscriberStats {
 export interface SubscriberDetail {
   id: string;
   email: string;
-  created_at: string;
+  created: number; // epoch seconds
   status: string;
   custom_fields?: { name: string; value: string }[];
   stats?: SubscriberStats;
@@ -58,30 +60,27 @@ async function apiFetch<T>(path: string, params?: Record<string, QueryValue>): P
 
 interface RawListResponse {
   data: SubscriberListItem[];
-  total_results?: number;
-  page?: number;
-  total_pages?: number;
-  pagination?: { total_results?: number; page?: number; total_pages?: number };
+  has_more?: boolean;
+  next_cursor?: string | null;
 }
 
 export async function listSubscribersPage(
-  page: number,
+  cursor?: string,
   limit = 100,
-): Promise<{ data: SubscriberListItem[]; total_results: number; page: number; total_pages: number }> {
-  const raw = await apiFetch<RawListResponse>(`/publications/${PUBLICATION_ID}/subscriptions`, {
+): Promise<{ data: SubscriberListItem[]; hasMore: boolean; nextCursor: string | null }> {
+  const params: Record<string, QueryValue> = {
     status: "active",
-    page: String(page),
     limit: String(limit),
     // oldest first — these subscribers have engagement history and tenure
     order_by: "created",
     direction: "asc",
-  });
-  // beehiiv may return pagination metadata top-level or nested under `pagination`
+  };
+  if (cursor) params.cursor = cursor;
+  const raw = await apiFetch<RawListResponse>(`/publications/${PUBLICATION_ID}/subscriptions`, params);
   return {
     data: raw.data ?? [],
-    total_results: raw.total_results ?? raw.pagination?.total_results ?? 0,
-    page: raw.page ?? raw.pagination?.page ?? page,
-    total_pages: raw.total_pages ?? raw.pagination?.total_pages ?? 1,
+    hasMore: raw.has_more ?? false,
+    nextCursor: raw.next_cursor ?? null,
   };
 }
 

@@ -6,19 +6,19 @@ export const WEIGHT_OPEN_RATE = 0.40;
 export const WEIGHT_CLICK_RATE = 0.45;
 export const WEIGHT_TENURE = 0.15;
 
-// Lead tiers
+// Lead tiers (match dashboard labels: Warm 30–49, Qualified 50–69, High-Priority ≥70)
 export const TIER_TOP = 70;
 export const TIER_QUALIFIED = 50;
-export const TIER_WARM = 10;
+export const TIER_WARM = 30;
 
 // Tenure thresholds (days)
 export const TENURE_MIN_DAYS = 30;
 export const TENURE_MAX_DAYS = 180;
 
-// Max leads to return after scoring
-export const MAX_ENRICHMENT = 50;
+// Max corporate candidates to enrich with full engagement stats per run
+export const MAX_ENRICHMENT = 75;
 
-// Pages to fetch in parallel (100 subs/page) — all fetched simultaneously
+// Pages to fetch in parallel for Pass 1 candidate discovery (100 subs/page)
 export const MAX_SCAN_PAGES = 20;
 
 // Consumer email domains to exclude

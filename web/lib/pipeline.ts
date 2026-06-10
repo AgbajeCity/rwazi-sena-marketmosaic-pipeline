@@ -68,14 +68,13 @@ export async function runPipeline(onProgress?: ProgressCallback): Promise<Pipeli
   const toEnrich = candidates.slice(0, MAX_ENRICHMENT);
   log(`Pass 2: enriching ${toEnrich.length} candidates in parallel...`);
 
-  // Enrich in batches of 10 to avoid beehiiv rate limits
+  // Enrich in batches to stay under beehiiv rate limits while staying fast
   const details: (Awaited<ReturnType<typeof getSubscription>> | null)[] = [];
-  const BATCH = 10;
+  const BATCH = 25;
   for (let i = 0; i < toEnrich.length; i += BATCH) {
     const batch = toEnrich.slice(i, i + BATCH);
-    const results = await Promise.all(batch.map((s) => getSubscription(s.id).catch((err) => { log(`enrich error: ${err?.message ?? err}`); return null; })));
+    const results = await Promise.all(batch.map((s) => getSubscription(s.id).catch(() => null)));
     details.push(...results);
-    break; // debug: only first batch
   }
 
   const leads: Lead[] = [];
@@ -115,9 +114,7 @@ export async function runPipeline(onProgress?: ProgressCallback): Promise<Pipeli
 
   leads.sort((a, b) => b.score - a.score);
 
-  // Debug: show sample scores to diagnose zero-lead issue
-  const sample = details.slice(0, 3).map(r => r ? `${r.data.email} open=${extractOpenRate(r.data)} click=${extractClickRate(r.data)}` : "null").join(" | ");
-  log(`Done — ${leads.length} leads from ${totalScanned} subscribers. Sample: ${sample}`);
+  log(`Done — ${leads.length} leads from ${totalScanned} subscribers`);
 
   return {
     leads,

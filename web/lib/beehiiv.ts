@@ -14,10 +14,13 @@ const headers = () => ({
 export interface SubscriberListItem {
   id: string;
   email: string;
-  created_at: string;
+  created_at?: string;
   status: string;
-  custom_fields?: { name: string; value: string }[];
-  stats?: { email?: { open_rate?: number; click_rate?: number } };
+}
+
+export interface SubscriberStats {
+  total_delivered?: number;
+  total_unique_opened?: number;
   open_rate?: number;
   click_rate?: number;
 }
@@ -27,21 +30,24 @@ export interface SubscriberDetail {
   email: string;
   created_at: string;
   status: string;
-  custom_fields: { name: string; value: string }[];
-  stats?: {
-    email?: {
-      open_rate?: number;
-      click_rate?: number;
-    };
-  };
-  // v2 flat fields
-  open_rate?: number;
-  click_rate?: number;
+  custom_fields?: { name: string; value: string }[];
+  stats?: SubscriberStats;
 }
 
-async function apiFetch<T>(path: string, params?: Record<string, string>): Promise<T> {
+type QueryValue = string | string[];
+
+async function apiFetch<T>(path: string, params?: Record<string, QueryValue>): Promise<T> {
   const url = new URL(`${BEEHIIV_API_BASE}${path}`);
-  if (params) Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+  if (params) {
+    for (const [k, v] of Object.entries(params)) {
+      if (Array.isArray(v)) {
+        // beehiiv v2 expects repeated array-style params, e.g. expand[]=stats
+        v.forEach((item) => url.searchParams.append(`${k}[]`, item));
+      } else {
+        url.searchParams.set(k, v);
+      }
+    }
+  }
   const res = await fetch(url.toString(), { headers: headers() });
   if (!res.ok) {
     const text = await res.text();
@@ -58,34 +64,29 @@ export async function listSubscribersPage(
     status: "active",
     page: String(page),
     limit: String(limit),
+    // oldest first — these subscribers have engagement history and tenure
     order_by: "created",
-    direction: "desc",
+    direction: "asc",
   });
 }
 
 export async function getSubscription(subId: string): Promise<{ data: SubscriberDetail }> {
   return apiFetch(`/publications/${PUBLICATION_ID}/subscriptions/${subId}`, {
-    expand: "stats,custom_fields",
+    expand: ["stats", "custom_fields"],
   });
 }
 
 type SubscriberLike = {
-  open_rate?: number;
-  click_rate?: number;
-  stats?: { email?: { open_rate?: number; click_rate?: number } };
+  stats?: SubscriberStats;
   custom_fields?: { name: string; value: string }[];
 };
 
 export function extractOpenRate(detail: SubscriberLike): number {
-  if (typeof detail.open_rate === "number") return detail.open_rate;
-  if (detail.stats?.email?.open_rate != null) return detail.stats.email.open_rate;
-  return 0;
+  return detail.stats?.open_rate ?? 0;
 }
 
 export function extractClickRate(detail: SubscriberLike): number {
-  if (typeof detail.click_rate === "number") return detail.click_rate;
-  if (detail.stats?.email?.click_rate != null) return detail.stats.email.click_rate;
-  return 0;
+  return detail.stats?.click_rate ?? 0;
 }
 
 export function extractCustomField(detail: SubscriberLike, name: string): string | null {

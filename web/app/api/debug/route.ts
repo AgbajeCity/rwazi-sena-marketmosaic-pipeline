@@ -1,36 +1,42 @@
 import { NextResponse } from "next/server";
-import { PUBLICATION_ID, BEEHIIV_API_BASE } from "@/lib/config";
+import { listSubscribersPage, getSubscription, extractOpenRate, extractClickRate, extractCustomField } from "@/lib/beehiiv";
+import { engagementScore, leadTier } from "@/lib/scorer";
+import { classifySeniority } from "@/lib/seniority";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+const CONSUMER = new Set(["gmail.com","yahoo.com","hotmail.com","outlook.com","icloud.com","aol.com","protonmail.com","me.com","live.com","msn.com","mail.com","inbox.com","gmx.com","ymail.com"]);
+const isCorp = (e: string) => !CONSUMER.has(e.split("@")[1]?.toLowerCase() ?? "");
+
 export async function GET() {
-  const key = process.env.BEEHIIV_API_KEY;
-  if (!key) return NextResponse.json({ error: "no api key" }, { status: 500 });
-  const h = { Authorization: `Bearer ${key}`, "Content-Type": "application/json" };
-
   try {
-    // 1. Raw list response (first page)
-    const listUrl = `${BEEHIIV_API_BASE}/publications/${PUBLICATION_ID}/subscriptions?status=active&limit=3&order_by=created&direction=asc`;
-    const listRes = await fetch(listUrl, { headers: h });
-    const listJson = await listRes.json();
+    const page = await listSubscribersPage(undefined, 100);
+    const corp = page.data.filter((s) => isCorp(s.email)).slice(0, 5);
 
-    // 2. Grab first subscription id and enrich it with expand
-    const first = listJson?.data?.[0] ?? listJson?.subscriptions?.[0];
-    let detailJson: unknown = null;
-    let detailUrl = "";
-    if (first?.id) {
-      detailUrl = `${BEEHIIV_API_BASE}/publications/${PUBLICATION_ID}/subscriptions/${first.id}?expand[]=stats&expand[]=custom_fields`;
-      const detailRes = await fetch(detailUrl, { headers: h });
-      detailJson = await detailRes.json();
+    const rows = [];
+    for (const s of corp) {
+      const det = await getSubscription(s.id).catch((e) => ({ err: String(e) } as never));
+      const d = (det as { data?: unknown }).data as Parameters<typeof extractOpenRate>[0] & { created?: number; email?: string } | undefined;
+      if (!d) { rows.push({ id: s.id, error: "no detail" }); continue; }
+      const openRate = extractOpenRate(d);
+      const clickRate = extractClickRate(d);
+      const jobTitle = extractCustomField(d, "Job Title") ?? extractCustomField(d, "job_title");
+      const seniority = classifySeniority(d.email ?? s.email, jobTitle, null);
+      const createdMs = (d.created ?? 0) * 1000;
+      const score = engagementScore(openRate, clickRate, createdMs, seniority);
+      rows.push({
+        email: d.email,
+        openRate, clickRate, jobTitle, seniority,
+        createdMs, score: Math.round(score * 10) / 10, tier: leadTier(score),
+      });
     }
 
     return NextResponse.json({
-      listStatus: listRes.status,
-      listKeys: Object.keys(listJson ?? {}),
-      listSample: listJson,
-      detailUrl,
-      detailJson,
+      listCount: page.data.length,
+      hasMore: page.hasMore,
+      corporateFound: corp.length,
+      rows,
     });
   } catch (err) {
     return NextResponse.json({ error: err instanceof Error ? err.message : String(err) }, { status: 500 });

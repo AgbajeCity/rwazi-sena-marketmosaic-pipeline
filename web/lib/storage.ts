@@ -25,6 +25,7 @@ export async function saveLeads(result: PipelineResult): Promise<void> {
     access: "private",
     contentType: "application/json",
     addRandomSuffix: false,
+    allowOverwrite: true,
     token,
   });
 }
@@ -46,6 +47,7 @@ export async function saveStatus(status: RunStatus): Promise<void> {
     access: "private",
     contentType: "application/json",
     addRandomSuffix: false,
+    allowOverwrite: true,
     token,
   });
 }

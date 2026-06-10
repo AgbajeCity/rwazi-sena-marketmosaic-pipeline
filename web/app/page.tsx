@@ -39,15 +39,15 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-white text-zinc-900">
-      {/* ── Dark nav bar, matching the Market Mosaic site header ───────── */}
-      <div className="bg-[#121212]">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <MarketMosaicLogo tone="light" />
+      {/* ── Nav bar — white so the full-colour logo reads as designed ── */}
+      <div className="border-b border-[#e5e7eb] bg-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
+          <MarketMosaicLogo />
           <a
             href="https://newsletter.rwazi.com/"
             target="_blank"
             rel="noreferrer"
-            className="rounded-full bg-[#e8553a] px-4 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-[#d4492f]"
+            className="rounded-full bg-[#F15A29] px-4 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-[#d94d22]"
           >
             Visit Market Mosaic ↗
           </a>
@@ -108,12 +108,10 @@ export default function DashboardPage() {
         )}
       </main>
 
-      <footer className="mt-8 bg-[#121212] py-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center gap-3 px-6 text-center">
-          <MarketMosaicLogo tone="light" />
-          <p className="text-xs text-zinc-500">
-            Make your next big decision with certainty
-          </p>
+      <footer className="mt-8 border-t border-[#e5e7eb] py-6">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6">
+          <MarketMosaicLogo className="opacity-70" />
+          <p className="text-xs text-zinc-400">Make your next big decision with certainty</p>
         </div>
       </footer>
     </div>

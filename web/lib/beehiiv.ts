@@ -60,7 +60,6 @@ export async function listSubscribersPage(
     limit: String(limit),
     order_by: "created",
     direction: "asc",
-    expand: "stats,custom_fields",
   });
 }
 

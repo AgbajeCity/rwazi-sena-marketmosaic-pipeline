@@ -1,9 +1,11 @@
 import { CONSUMER_DOMAINS, MAX_ENRICHMENT, MAX_SCAN_PAGES } from "./config";
 import {
   listSubscribersPage,
+  getSubscription,
   extractOpenRate,
   extractClickRate,
   extractCustomField,
+  SubscriberListItem,
 } from "./beehiiv";
 import { engagementScore, leadTier } from "./scorer";
 import { classifySeniority, domain, SeniorityTier } from "./seniority";
@@ -40,9 +42,9 @@ export async function runPipeline(onProgress?: ProgressCallback): Promise<Pipeli
   const start = Date.now();
   const log = (msg: string) => onProgress?.(msg);
 
-  log("Fetching subscribers...");
+  log("Pass 1: scanning subscriber list...");
 
-  // Fetch page 1 to discover total_pages, then fetch all pages in parallel
+  // Fetch page 1 to get total_pages, then fetch all remaining pages in parallel
   const firstResp = await listSubscribersPage(1, 100);
   const totalPages = Math.min(firstResp.total_pages ?? 1, MAX_SCAN_PAGES);
 
@@ -54,55 +56,65 @@ export async function runPipeline(onProgress?: ProgressCallback): Promise<Pipeli
     allPages.push(...rest);
   }
 
-  log(`Scoring ${totalPages * 100} subscribers...`);
-
-  const leads: Lead[] = [];
+  const candidates: SubscriberListItem[] = [];
   let totalScanned = 0;
-
   for (const resp of allPages) {
+    totalScanned += resp.data.length;
     for (const sub of resp.data) {
-      totalScanned++;
-      if (!isCorporate(sub.email)) continue;
-
-      const openRate = extractOpenRate(sub);
-      const clickRate = extractClickRate(sub);
-      const jobTitle = extractCustomField(sub, "job_title") ?? extractCustomField(sub, "Job Title");
-      const company = extractCustomField(sub, "company") ?? extractCustomField(sub, "Company");
-      const role = extractCustomField(sub, "role");
-
-      const seniority = classifySeniority(sub.email, jobTitle, role);
-      if (seniority === "UNVERIFIED") continue;
-
-      const score = engagementScore(openRate, clickRate, sub.created_at);
-      const tier = leadTier(score);
-      if (tier === "excluded") continue;
-
-      const days = Math.floor((Date.now() - new Date(sub.created_at).getTime()) / (1000 * 60 * 60 * 24));
-
-      leads.push({
-        id: sub.id,
-        email: sub.email,
-        domain: domain(sub.email),
-        company,
-        jobTitle,
-        seniorityTier: seniority,
-        score: Math.round(score * 10) / 10,
-        openRate,
-        clickRate,
-        tier,
-        createdAt: sub.created_at,
-        subscriptionDays: days,
-      });
+      if (isCorporate(sub.email)) candidates.push(sub);
     }
   }
 
-  leads.sort((a, b) => b.score - a.score);
-  const topLeads = leads.slice(0, MAX_ENRICHMENT);
+  const toEnrich = candidates.slice(0, MAX_ENRICHMENT);
+  log(`Pass 2: enriching ${toEnrich.length} candidates in parallel...`);
 
-  log(`Done — ${topLeads.length} qualified leads from ${totalScanned} subscribers`);
+  // Enrich all candidates concurrently — beehiiv list doesn't include stats
+  const details = await Promise.all(
+    toEnrich.map((s) => getSubscription(s.id).catch(() => null))
+  );
+
+  const leads: Lead[] = [];
+
+  for (const result of details) {
+    if (!result) continue;
+    const d = result.data;
+    const openRate = extractOpenRate(d);
+    const clickRate = extractClickRate(d);
+    const jobTitle = extractCustomField(d, "job_title") ?? extractCustomField(d, "Job Title");
+    const company = extractCustomField(d, "company") ?? extractCustomField(d, "Company");
+    const role = extractCustomField(d, "role");
+
+    const seniority = classifySeniority(d.email, jobTitle, role);
+    if (seniority === "UNVERIFIED") continue;
+
+    const score = engagementScore(openRate, clickRate, d.created_at);
+    const tier = leadTier(score);
+    if (tier === "excluded") continue;
+
+    const days = Math.floor((Date.now() - new Date(d.created_at).getTime()) / (1000 * 60 * 60 * 24));
+
+    leads.push({
+      id: d.id,
+      email: d.email,
+      domain: domain(d.email),
+      company,
+      jobTitle,
+      seniorityTier: seniority,
+      score: Math.round(score * 10) / 10,
+      openRate,
+      clickRate,
+      tier,
+      createdAt: d.created_at,
+      subscriptionDays: days,
+    });
+  }
+
+  leads.sort((a, b) => b.score - a.score);
+
+  log(`Done — ${leads.length} leads from ${totalScanned} subscribers`);
 
   return {
-    leads: topLeads,
+    leads,
     totalProcessed: totalScanned,
     runDate: new Date().toISOString(),
     durationMs: Date.now() - start,

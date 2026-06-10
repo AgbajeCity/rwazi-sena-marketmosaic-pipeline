@@ -26,8 +26,8 @@ export function RwaziMark({ className = "h-6 w-6" }: { className?: string }) {
 }
 
 /**
- * Full Market Mosaic lockup: mark + "Market Mosaic" wordmark with the
- * "by Rwazi" descriptor. `tone` adapts text color for dark vs light bands.
+ * Market Mosaic lockup: mark + "Market Mosaic" wordmark.
+ * `tone` adapts text color for dark vs light bands.
  */
 export function MarketMosaicLogo({
   tone = "light",
@@ -37,14 +37,10 @@ export function MarketMosaicLogo({
   className?: string;
 }) {
   const title = tone === "light" ? "text-white" : "text-zinc-900";
-  const sub = tone === "light" ? "text-zinc-400" : "text-zinc-500";
   return (
     <span className={`flex items-center gap-2.5 ${className}`}>
       <RwaziMark className="h-7 w-7 shrink-0" />
-      <span className="leading-none">
-        <span className={`block text-base font-bold tracking-tight ${title}`}>Market Mosaic</span>
-        <span className={`block text-[11px] font-medium ${sub}`}>by Rwazi</span>
-      </span>
+      <span className={`text-base font-bold tracking-tight leading-none ${title}`}>Market Mosaic</span>
     </span>
   );
 }

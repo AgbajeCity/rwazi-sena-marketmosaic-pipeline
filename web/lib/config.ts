@@ -26,6 +26,16 @@ export const MAX_ENRICHMENT = 20;
 // Pages to fetch in parallel for Pass 1 candidate discovery (100 subs/page)
 export const MAX_SCAN_PAGES = 5;
 
+// ── Deep-scan (chunked background job) settings ───────────────────────────
+// Wall-clock budget per chunk. Each /api/run-deep call does at most this much
+// work then persists progress, staying well under Vercel's 60s function limit.
+export const CHUNK_BUDGET_MS = 40_000;
+// Max corporate candidates to enrich across the whole deep run. Enrichment is
+// one API call each (beehiiv ~180 req/min), so this bounds total runtime/cost.
+export const DEEP_ENRICH_MAX = 2000;
+// Safety cap on total subscribers listed (0 = scan the entire base).
+export const DEEP_SCAN_MAX = 0;
+
 // Consumer email domains to exclude
 export const CONSUMER_DOMAINS = new Set([
   "gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "icloud.com",

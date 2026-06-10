@@ -41,6 +41,29 @@ export function PipelineControl({ onComplete }: Props) {
     fetchStatus();
   };
 
+  // Deep scan: loop the chunked endpoint until the job reports done. Each call
+  // does one time-bounded slice server-side, so this never trips the 60s limit.
+  const triggerDeepRun = async () => {
+    setTriggering(true);
+    try {
+      let first = true;
+      // guard against an unexpected runaway; ~250 chunks is plenty for 129K
+      for (let i = 0; i < 250; i++) {
+        const res = await fetch(`/api/run-deep${first ? "?restart=1" : ""}`, { method: "POST" });
+        first = false;
+        await fetchStatus();
+        onComplete();
+        if (!res.ok) break;
+        const body = (await res.json()) as { done?: boolean };
+        if (body.done) break;
+      }
+    } finally {
+      setTriggering(false);
+      fetchStatus();
+      onComplete();
+    }
+  };
+
   const isRunning = status?.state === "running" || triggering;
 
   return (
@@ -77,6 +100,15 @@ export function PipelineControl({ onComplete }: Props) {
           </svg>
           Export CSV
         </a>
+        <button
+          onClick={triggerDeepRun}
+          disabled={isRunning}
+          title="Scan the entire subscriber base (runs in resumable chunks)"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-[#7df59e]/30 bg-[#7df59e]/10 px-3 py-2 text-sm font-medium text-[#7df59e] transition-colors hover:bg-[#7df59e]/15 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <DeepIcon />
+          Deep Scan
+        </button>
         <button
           onClick={triggerRun}
           disabled={isRunning}
@@ -119,6 +151,16 @@ function PlayIcon() {
   return (
     <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
       <polygon points="5 3 19 12 5 21 5 3" />
+    </svg>
+  );
+}
+
+function DeepIcon() {
+  return (
+    <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <ellipse cx="12" cy="5" rx="9" ry="3" />
+      <path d="M3 5v6c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+      <path d="M3 11v6c0 1.66 4 3 9 3s9-1.34 9-3v-6" />
     </svg>
   );
 }

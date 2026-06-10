@@ -1,4 +1,11 @@
-import { CONSUMER_DOMAINS, MAX_ENRICHMENT, MAX_SCAN_PAGES } from "./config";
+import {
+  CONSUMER_DOMAINS,
+  MAX_ENRICHMENT,
+  MAX_SCAN_PAGES,
+  CHUNK_BUDGET_MS,
+  DEEP_ENRICH_MAX,
+  DEEP_SCAN_MAX,
+} from "./config";
 import {
   listSubscribersPage,
   getSubscription,
@@ -9,6 +16,7 @@ import {
 } from "./beehiiv";
 import { engagementScore, leadTier } from "./scorer";
 import { classifySeniority, domain, SeniorityTier } from "./seniority";
+import { JobState } from "./job";
 
 export interface Lead {
   id: string;
@@ -36,6 +44,37 @@ export type ProgressCallback = (msg: string) => void;
 
 function isCorporate(email: string): boolean {
   return !CONSUMER_DOMAINS.has(email.split("@")[1]?.toLowerCase() ?? "");
+}
+
+// Score one enriched subscriber detail into a Lead, or null if below threshold.
+function scoreDetail(d: import("./beehiiv").SubscriberDetail): Lead | null {
+  const openRate = extractOpenRate(d);
+  const clickRate = extractClickRate(d);
+  const jobTitle = extractCustomField(d, "Job Title") ?? extractCustomField(d, "job_title");
+  const company = extractCustomField(d, "Company") ?? extractCustomField(d, "company");
+  const role = extractCustomField(d, "Role") ?? extractCustomField(d, "role");
+
+  const seniority = classifySeniority(d.email, jobTitle, role);
+  const createdMs = (d.created ?? 0) * 1000;
+  const score = engagementScore(openRate, clickRate, createdMs, seniority);
+  const tier = leadTier(score);
+  if (tier === "excluded") return null;
+
+  const days = createdMs ? Math.floor((Date.now() - createdMs) / (1000 * 60 * 60 * 24)) : 0;
+  return {
+    id: d.id,
+    email: d.email,
+    domain: domain(d.email),
+    company,
+    jobTitle,
+    seniorityTier: seniority,
+    score: Math.round(score * 10) / 10,
+    openRate: Math.round(openRate * 10) / 10,
+    clickRate: Math.round(clickRate * 10) / 10,
+    tier,
+    createdAt: createdMs ? new Date(createdMs).toISOString() : new Date().toISOString(),
+    subscriptionDays: days,
+  };
 }
 
 export async function runPipeline(onProgress?: ProgressCallback): Promise<PipelineResult> {
@@ -77,36 +116,8 @@ export async function runPipeline(onProgress?: ProgressCallback): Promise<Pipeli
 
   for (const result of details) {
     if (!result) continue;
-    const d = result.data;
-    const openRate = extractOpenRate(d);
-    const clickRate = extractClickRate(d);
-    const jobTitle = extractCustomField(d, "Job Title") ?? extractCustomField(d, "job_title");
-    const company = extractCustomField(d, "Company") ?? extractCustomField(d, "company");
-    const role = extractCustomField(d, "Role") ?? extractCustomField(d, "role");
-
-    const seniority = classifySeniority(d.email, jobTitle, role);
-
-    const createdMs = (d.created ?? 0) * 1000;
-    const score = engagementScore(openRate, clickRate, createdMs, seniority);
-    const tier = leadTier(score);
-    if (tier === "excluded") continue;
-
-    const days = createdMs ? Math.floor((Date.now() - createdMs) / (1000 * 60 * 60 * 24)) : 0;
-
-    leads.push({
-      id: d.id,
-      email: d.email,
-      domain: domain(d.email),
-      company,
-      jobTitle,
-      seniorityTier: seniority,
-      score: Math.round(score * 10) / 10,
-      openRate: Math.round(openRate * 10) / 10,
-      clickRate: Math.round(clickRate * 10) / 10,
-      tier,
-      createdAt: createdMs ? new Date(createdMs).toISOString() : new Date().toISOString(),
-      subscriptionDays: days,
-    });
+    const lead = scoreDetail(result.data);
+    if (lead) leads.push(lead);
   }
 
   leads.sort((a, b) => b.score - a.score);
@@ -119,5 +130,90 @@ export async function runPipeline(onProgress?: ProgressCallback): Promise<Pipeli
     totalProcessed: totalScanned,
     runDate: new Date().toISOString(),
     durationMs: Date.now() - start,
+  };
+}
+
+// ── Deep scan (chunked, resumable) ────────────────────────────────────────
+
+// A fresh deep-scan job, ready for the first chunk.
+export function newDeepJob(): JobState {
+  return {
+    state: "running",
+    cursor: null,
+    scanComplete: false,
+    totalScanned: 0,
+    pending: [],
+    enrichedCount: 0,
+    enrichTarget: DEEP_ENRICH_MAX,
+    leads: [],
+    startedAt: new Date().toISOString(),
+    finishedAt: null,
+    message: "Starting deep scan…",
+  };
+}
+
+// Advance a deep-scan job by one time-bounded chunk and return the new state.
+// Spends the first half of the budget listing subscribers, the second half
+// enriching corporate candidates — so progress is made on both fronts each call.
+export async function runDeepChunk(job: JobState): Promise<JobState> {
+  const deadline = Date.now() + CHUNK_BUDGET_MS;
+  const scanCutoff = Date.now() + CHUNK_BUDGET_MS / 2;
+
+  // Phase 1 — list subscribers until the scan cutoff (or base exhausted).
+  while (
+    !job.scanComplete &&
+    Date.now() < scanCutoff &&
+    (DEEP_SCAN_MAX === 0 || job.totalScanned < DEEP_SCAN_MAX)
+  ) {
+    const resp = await listSubscribersPage(job.cursor ?? undefined, 100);
+    job.totalScanned += resp.data.length;
+    for (const sub of resp.data) {
+      if (isCorporate(sub.email) && job.pending.length + job.enrichedCount < job.enrichTarget) {
+        job.pending.push({ id: sub.id, email: sub.email });
+      }
+    }
+    if (!resp.hasMore || !resp.nextCursor) {
+      job.scanComplete = true;
+    } else {
+      job.cursor = resp.nextCursor;
+    }
+  }
+
+  // Phase 2 — enrich pending candidates (5 concurrent) until the deadline.
+  const CONCURRENCY = 5;
+  while (job.pending.length > 0 && Date.now() < deadline) {
+    const batch = job.pending.splice(0, CONCURRENCY);
+    const results = await Promise.all(
+      batch.map((c) => getSubscription(c.id).catch(() => null)),
+    );
+    for (const r of results) {
+      if (!r) continue;
+      job.enrichedCount += 1;
+      const lead = scoreDetail(r.data);
+      if (lead) job.leads.push(lead);
+    }
+  }
+
+  // Done when the base is fully listed and no candidates remain to enrich.
+  if (job.scanComplete && job.pending.length === 0) {
+    job.state = "done";
+    job.finishedAt = new Date().toISOString();
+    job.leads.sort((a, b) => b.score - a.score);
+    job.message = `Completed — ${job.leads.length} leads from ${job.totalScanned.toLocaleString()} subscribers`;
+  } else {
+    const phase = job.scanComplete ? "Enriching" : "Scanning";
+    job.message = `${phase}… ${job.totalScanned.toLocaleString()} scanned, ${job.enrichedCount.toLocaleString()} enriched, ${job.leads.length} leads so far`;
+  }
+
+  return job;
+}
+
+// Produce the dashboard-facing result from a finished (or in-flight) job.
+export function jobToResult(job: JobState): PipelineResult {
+  return {
+    leads: [...job.leads].sort((a, b) => b.score - a.score),
+    totalProcessed: job.totalScanned,
+    runDate: job.finishedAt ?? job.startedAt,
+    durationMs: 0,
   };
 }

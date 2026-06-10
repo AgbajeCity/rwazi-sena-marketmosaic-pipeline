@@ -84,7 +84,7 @@ export function StatsCards({ leads, totalProcessed, runDate }: Props) {
       icon: <CheckCircleIcon />,
     },
     {
-      label: "Warm (30–49)",
+      label: "Warm (20–49)",
       value: warm,
       sub: "Monitor market signals",
       accent: "text-amber-300",

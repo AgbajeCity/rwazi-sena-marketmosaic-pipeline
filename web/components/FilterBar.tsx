@@ -40,7 +40,7 @@ export function FilterBar({ filters, onChange, totalShown, totalLeads }: Props) 
             { value: "", label: "All tiers" },
             { value: "top", label: "Top (≥70)" },
             { value: "qualified", label: "Qualified (50–69)" },
-            { value: "warm", label: "Warm (30–49)" },
+            { value: "warm", label: "Warm (20–49)" },
           ]}
         />
 

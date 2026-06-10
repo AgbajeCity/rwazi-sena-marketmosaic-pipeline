@@ -1,16 +1,11 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-// Inter matches the clean modern grotesque used across the Market Mosaic site.
-const sans = Inter({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-});
-
+// Market Mosaic uses the native system-ui stack (no custom font loaded).
+// Only load a monospace font for the email column in the table.
 const mono = JetBrains_Mono({
-  variable: "--font-geist-mono",
+  variable: "--font-mono",
   subsets: ["latin"],
   weight: ["400", "500"],
 });
@@ -28,7 +23,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${sans.variable} ${mono.variable} h-full antialiased`}
+      className={`${mono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-white text-zinc-900 antialiased">{children}</body>
     </html>

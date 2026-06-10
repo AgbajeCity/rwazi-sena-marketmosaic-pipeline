@@ -4,9 +4,9 @@
   /* ── Market Mosaic palette (newsletter.rwazi.com) ───────────────────── */
   --background: #ffffff;
   --surface: #ffffff;
-  --surface-soft: #f6f5f2;   /* light cream section bands */
-  --surface-2: #faf9f7;
-  --border: #e7e3dc;          /* warm light border */
+  --surface-soft: #f9fafb;   /* gray-50 */
+  --surface-2: #f3f4f6;      /* gray-100 */
+  --border: #e5e7eb;          /* exact MM border: rgb(229,231,235) */
   --foreground: #18181b;      /* near-black ink */
   --muted: #6b6b6b;
   --ink: #121212;             /* dark nav / footer bands */
@@ -32,7 +32,8 @@ body {
 }
 
 body {
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  /* Exact MM system font stack from DevTools computed styles */
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

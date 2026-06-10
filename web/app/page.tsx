@@ -6,6 +6,7 @@ import { StatsCards } from "@/components/StatsCards";
 import { PipelineControl } from "@/components/PipelineControl";
 import { FilterBar, Filters } from "@/components/FilterBar";
 import { LeadsTable } from "@/components/LeadsTable";
+import { MarketMosaicLogo } from "@/components/Logo";
 
 interface ApiResponse {
   leads: Lead[];
@@ -41,12 +42,7 @@ export default function DashboardPage() {
       {/* ── Dark nav bar, matching the Market Mosaic site header ───────── */}
       <div className="bg-[#121212]">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-[#e8553a] text-sm font-bold text-white">r</span>
-            <span className="text-xl font-bold tracking-tight text-white lowercase">rwazi</span>
-            <span className="hidden h-4 w-px bg-white/20 sm:block" />
-            <span className="hidden text-sm font-medium text-zinc-300 sm:inline-block">Market Mosaic</span>
-          </div>
+          <MarketMosaicLogo tone="light" />
           <a
             href="https://newsletter.rwazi.com/"
             target="_blank"
@@ -113,13 +109,10 @@ export default function DashboardPage() {
       </main>
 
       <footer className="mt-8 bg-[#121212] py-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center gap-2 px-6 text-center">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex h-5 w-5 items-center justify-center rounded bg-[#e8553a] text-xs font-bold text-white">r</span>
-            <span className="text-sm font-bold lowercase text-white">rwazi</span>
-          </div>
+        <div className="mx-auto flex max-w-7xl flex-col items-center gap-3 px-6 text-center">
+          <MarketMosaicLogo tone="light" />
           <p className="text-xs text-zinc-500">
-            Market Mosaic by Rwazi · Make your next big decision with certainty
+            Make your next big decision with certainty
           </p>
         </div>
       </footer>

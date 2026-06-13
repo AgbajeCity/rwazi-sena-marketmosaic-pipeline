@@ -15,15 +15,19 @@ import {
   SubscriberListItem,
 } from "./beehiiv";
 import { engagementScore, leadTier } from "./scorer";
-import { classifySeniority, domain, SeniorityTier } from "./seniority";
+import { classifySeniority, classifyFunction, domain, SeniorityTier } from "./seniority";
 import { JobState } from "./job";
 
 export interface Lead {
   id: string;
   email: string;
+  name: string | null;
+  linkedinUrl: string | null;
+  topics: string | null;
   domain: string;
   company: string | null;
   jobTitle: string | null;
+  func: string | null;
   seniorityTier: SeniorityTier;
   score: number;
   openRate: number;
@@ -50,11 +54,24 @@ function isCorporate(email: string): boolean {
 function scoreDetail(d: import("./beehiiv").SubscriberDetail): Lead | null {
   const openRate = extractOpenRate(d);
   const clickRate = extractClickRate(d);
-  const jobTitle = extractCustomField(d, "Job Title") ?? extractCustomField(d, "job_title");
-  const company = extractCustomField(d, "Company") ?? extractCustomField(d, "company");
-  const role = extractCustomField(d, "Role") ?? extractCustomField(d, "role");
+  const jobTitle = extractCustomField(d, "job_title") ?? extractCustomField(d, "Job Title");
+  const company = extractCustomField(d, "company") ?? extractCustomField(d, "Company");
+  const role = extractCustomField(d, "role") ?? extractCustomField(d, "Role");
+
+  // Name + outreach fields Market Mosaic collects on signup (used by the
+  // marketing/sales teams who consume these leads, not for scoring).
+  const fullName = extractCustomField(d, "full_name");
+  const firstLast = [extractCustomField(d, "first_name"), extractCustomField(d, "last_name")]
+    .filter(Boolean)
+    .join(" ");
+  const name = fullName ?? (firstLast || null);
+  const linkedinUrl = extractCustomField(d, "linkedin_profile");
+  const topics =
+    extractCustomField(d, "favorite_topics") ??
+    extractCustomField(d, "market_mosaic_topics_you_want_to_see");
 
   const seniority = classifySeniority(d.email, jobTitle, role);
+  const func = classifyFunction(jobTitle, role);
   const createdMs = (d.created ?? 0) * 1000;
   const score = engagementScore(openRate, clickRate, createdMs, seniority);
   const tier = leadTier(score);
@@ -64,9 +81,13 @@ function scoreDetail(d: import("./beehiiv").SubscriberDetail): Lead | null {
   return {
     id: d.id,
     email: d.email,
+    name,
+    linkedinUrl,
+    topics,
     domain: domain(d.email),
     company,
     jobTitle,
+    func,
     seniorityTier: seniority,
     score: Math.round(score * 10) / 10,
     openRate: Math.round(openRate * 10) / 10,

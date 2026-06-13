@@ -7,6 +7,7 @@ import { PipelineControl } from "@/components/PipelineControl";
 import { FilterBar, Filters } from "@/components/FilterBar";
 import { LeadsTable } from "@/components/LeadsTable";
 import { MarketMosaicLogo } from "@/components/Logo";
+import { BUDGET_FUNCTIONS } from "@/lib/config";
 
 interface ApiResponse {
   leads: Lead[];
@@ -17,7 +18,7 @@ interface ApiResponse {
 export default function DashboardPage() {
   const [data, setData] = useState<ApiResponse>({ leads: [], totalProcessed: 0, runDate: null });
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState<Filters>({ tier: "", seniority: "", search: "" });
+  const [filters, setFilters] = useState<Filters>({ tier: "", seniority: "", func: "", search: "" });
 
   const fetchLeads = useCallback(async () => {
     const res = await fetch("/api/leads");
@@ -30,9 +31,26 @@ export default function DashboardPage() {
   const filtered = data.leads.filter((l) => {
     if (filters.tier && l.tier !== filters.tier) return false;
     if (filters.seniority && l.seniorityTier !== filters.seniority) return false;
+    if (filters.func) {
+      if (filters.func === "__budget__") {
+        if (!l.func || !BUDGET_FUNCTIONS.has(l.func)) return false;
+      } else if (l.func !== filters.func) {
+        return false;
+      }
+    }
     if (filters.search) {
       const q = filters.search.toLowerCase();
-      const haystack = [l.email, l.domain, l.company ?? "", l.jobTitle ?? ""].join(" ").toLowerCase();
+      const haystack = [
+        l.name ?? "",
+        l.email,
+        l.domain,
+        l.company ?? "",
+        l.jobTitle ?? "",
+        l.func ?? "",
+        l.topics ?? "",
+      ]
+        .join(" ")
+        .toLowerCase();
       if (!haystack.includes(q)) return false;
     }
     return true;

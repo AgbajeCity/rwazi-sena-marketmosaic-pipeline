@@ -1,6 +1,7 @@
 "use client";
 
 import { Lead } from "@/lib/pipeline";
+import { recommendedAction } from "@/lib/leads";
 
 const TIER_STYLES: Record<string, string> = {
   top: "bg-[#fef0eb] text-[#d94d22] border border-[#F15A29]/25",
@@ -14,12 +15,6 @@ const SENIORITY_STYLES: Record<string, string> = {
   PROBABLE_SENIORITY: "bg-sky-50 text-sky-700 border border-sky-500/20",
   INFERRED: "bg-zinc-100 text-zinc-500 border border-zinc-200",
   UNVERIFIED: "bg-zinc-100 text-zinc-400 border border-zinc-200",
-};
-
-const RECOMMENDED_ACTION: Record<string, string> = {
-  top: "Book a tailored demo",
-  qualified: "Decision-ready nurture",
-  warm: "Monitor signals",
 };
 
 interface Props {
@@ -46,44 +41,62 @@ export function LeadsTable({ leads }: Props) {
       <table className="min-w-full text-sm">
         <thead className="sticky top-0 z-10 bg-zinc-50 text-xs uppercase tracking-wide text-zinc-500 shadow-[0_1px_0_0_rgba(0,0,0,0.06)]">
           <tr>
-            <th className="w-[200px] px-4 py-3 text-left font-semibold">Email</th>
-            <th className="px-4 py-3 text-left font-semibold">Company / Domain</th>
-            <th className="w-[140px] px-4 py-3 text-left font-semibold">Title</th>
+            <th className="w-[230px] px-4 py-3 text-left font-semibold">Contact</th>
+            <th className="px-4 py-3 text-left font-semibold">Company / Title</th>
+            <th className="px-4 py-3 text-left font-semibold">Function</th>
             <th className="px-4 py-3 text-left font-semibold">Seniority</th>
-            <th className="w-[70px] px-4 py-3 text-right font-semibold">Score</th>
-            <th className="w-[70px] px-4 py-3 text-right font-semibold">Open %</th>
-            <th className="w-[70px] px-4 py-3 text-right font-semibold">Click %</th>
-            <th className="w-[60px] px-4 py-3 text-right font-semibold">Days</th>
+            <th className="w-[64px] px-4 py-3 text-right font-semibold">Score</th>
+            <th className="w-[64px] px-4 py-3 text-right font-semibold">Open %</th>
+            <th className="w-[64px] px-4 py-3 text-right font-semibold">Click %</th>
+            <th className="w-[56px] px-4 py-3 text-right font-semibold">Days</th>
             <th className="px-4 py-3 text-left font-semibold">Tier</th>
-            <th className="px-4 py-3 text-left font-semibold">Action</th>
+            <th className="px-4 py-3 text-left font-semibold">Recommended action</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-zinc-100">
           {leads.map((lead) => (
             <tr key={lead.id} className="transition-colors hover:bg-zinc-50">
-              <td className="max-w-[200px] px-4 py-3">
-                <span
-                  className="block truncate font-mono text-xs text-zinc-800"
-                  title={lead.email}
-                >
+              <td className="max-w-[230px] px-4 py-3">
+                <div className="flex items-center gap-1.5">
+                  {lead.name ? (
+                    <span className="truncate font-medium text-zinc-900" title={lead.name}>
+                      {lead.name}
+                    </span>
+                  ) : (
+                    <span className="text-xs italic text-zinc-400">No name on file</span>
+                  )}
+                  {lead.linkedinUrl && (
+                    <a
+                      href={normalizeUrl(lead.linkedinUrl)}
+                      target="_blank"
+                      rel="noreferrer"
+                      title="LinkedIn profile"
+                      className="shrink-0 text-zinc-400 transition-colors hover:text-[#0a66c2]"
+                    >
+                      <LinkedInIcon />
+                    </a>
+                  )}
+                </div>
+                <span className="block truncate font-mono text-[11px] text-zinc-500" title={lead.email}>
                   {lead.email}
                 </span>
               </td>
-              <td className="max-w-[180px] px-4 py-3">
-                <span
-                  className="block truncate text-xs text-zinc-600"
-                  title={lead.company ?? lead.domain}
-                >
+              <td className="max-w-[200px] px-4 py-3">
+                <span className="block truncate text-xs font-medium text-zinc-700" title={lead.company ?? lead.domain}>
                   {lead.company ?? lead.domain}
                 </span>
-              </td>
-              <td className="max-w-[140px] px-4 py-3">
-                <span
-                  className="block truncate text-xs text-zinc-500"
-                  title={lead.jobTitle ?? ""}
-                >
+                <span className="block truncate text-xs text-zinc-500" title={lead.jobTitle ?? ""}>
                   {lead.jobTitle ?? "—"}
                 </span>
+              </td>
+              <td className="px-4 py-3">
+                {lead.func ? (
+                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${functionStyle(lead.func)}`}>
+                    {lead.func}
+                  </span>
+                ) : (
+                  <span className="text-xs text-zinc-400">—</span>
+                )}
               </td>
               <td className="px-4 py-3">
                 <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${SENIORITY_STYLES[lead.seniorityTier] ?? "bg-zinc-100 text-zinc-500"}`}>
@@ -108,7 +121,7 @@ export function LeadsTable({ leads }: Props) {
                 </span>
               </td>
               <td className="whitespace-nowrap px-4 py-3 text-xs text-zinc-500">
-                {RECOMMENDED_ACTION[lead.tier] ?? "—"}
+                {recommendedAction(lead.tier)}
               </td>
             </tr>
           ))}
@@ -126,4 +139,23 @@ function seniorityLabel(tier: string): string {
     case "UNVERIFIED": return "Unverified";
     default: return tier;
   }
+}
+
+// Budget-holding functions (Sena's ICP) read in coral; Insights/Research — the
+// deprioritised analyst segment — reads in muted grey.
+function functionStyle(func: string): string {
+  if (func === "Insights/Research") return "bg-zinc-100 text-zinc-500 border border-zinc-200";
+  return "bg-[#fef0eb] text-[#d94d22] border border-[#F15A29]/20";
+}
+
+function normalizeUrl(url: string): string {
+  return /^https?:\/\//i.test(url) ? url : `https://${url}`;
+}
+
+function LinkedInIcon() {
+  return (
+    <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14zM8.34 9.67H5.67V18h2.67V9.67zM7 5.5a1.55 1.55 0 1 0 0 3.1 1.55 1.55 0 0 0 0-3.1zM18.33 18v-4.57c0-2.4-1.28-3.52-2.99-3.52-1.38 0-2 .76-2.34 1.29v-1.1h-2.67c.04.75 0 8.4 0 8.4h2.67v-4.69c0-.24.02-.48.09-.65.19-.48.63-.97 1.36-.97.96 0 1.34.73 1.34 1.8V18h2.84z" />
+    </svg>
+  );
 }

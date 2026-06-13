@@ -3,6 +3,7 @@
 export interface Filters {
   tier: string;
   seniority: string;
+  func: string;
   search: string;
 }
 
@@ -26,7 +27,7 @@ export function FilterBar({ filters, onChange, totalShown, totalLeads }: Props) 
           </span>
           <input
             type="text"
-            placeholder="Search email, company, title…"
+            placeholder="Search name, email, company, title…"
             value={filters.search}
             onChange={(e) => onChange({ ...filters, search: e.target.value })}
             className="w-56 rounded-lg border border-zinc-300 bg-white py-2 pl-9 pr-3 text-sm text-zinc-800 placeholder:text-zinc-400 focus:border-[#F15A29]/50 focus:outline-none focus:ring-1 focus:ring-[#F15A29]/40"
@@ -52,6 +53,22 @@ export function FilterBar({ filters, onChange, totalShown, totalLeads }: Props) 
             { value: "HIGH_SENIORITY", label: "Confirmed senior" },
             { value: "PROBABLE_SENIORITY", label: "Corporate domain" },
             { value: "INFERRED", label: "Inferred" },
+          ]}
+        />
+
+        <Select
+          value={filters.func}
+          onChange={(v) => onChange({ ...filters, func: v })}
+          options={[
+            { value: "", label: "All functions" },
+            { value: "__budget__", label: "Budget functions (ICP)" },
+            { value: "Marketing", label: "Marketing" },
+            { value: "Sales", label: "Sales" },
+            { value: "Brand", label: "Brand" },
+            { value: "Business Development", label: "Business Development" },
+            { value: "Strategy", label: "Strategy" },
+            { value: "Product", label: "Product" },
+            { value: "Insights/Research", label: "Insights / Research" },
           ]}
         />
 

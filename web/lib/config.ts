@@ -51,3 +51,22 @@ export const SENIOR_TITLE_KEYWORDS = [
   "vp ", "vice president", "svp", "evp", "avp",
   "chief", "general manager", "gm",
 ];
+
+// Business function classification, ordered by match priority (first match wins).
+// The budget-holding functions (Marketing → Product) are Sena's ICP: enterprise
+// decision-makers with spend. "Insights/Research" is surfaced separately so the
+// marketing/sales teams can deprioritise pure analyst/market-intelligence titles.
+export const FUNCTION_KEYWORDS: { label: string; keywords: string[] }[] = [
+  { label: "Business Development", keywords: ["business development", "biz dev", "partnerships", "alliances"] },
+  { label: "Brand", keywords: ["brand"] },
+  { label: "Marketing", keywords: ["marketing", "demand gen", "growth", "communications", "comms", "cmo", "content"] },
+  { label: "Sales", keywords: ["sales", "account executive", "account manager", "revenue", "commercial", "go-to-market", "gtm"] },
+  { label: "Strategy", keywords: ["strategy", "strategic", "corporate development", "planning", "transformation"] },
+  { label: "Product", keywords: ["product", "cpo"] },
+  { label: "Insights/Research", keywords: ["insight", "intelligence", "research", "analyst", "analytics", "data science", "data scientist"] },
+];
+
+// Functions that hold budget and are Sena's primary acquisition targets.
+export const BUDGET_FUNCTIONS = new Set([
+  "Business Development", "Brand", "Marketing", "Sales", "Strategy", "Product",
+]);

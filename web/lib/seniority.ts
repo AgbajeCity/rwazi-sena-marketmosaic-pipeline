@@ -1,4 +1,4 @@
-import { CONSUMER_DOMAINS, SENIOR_TITLE_KEYWORDS } from "./config";
+import { CONSUMER_DOMAINS, SENIOR_TITLE_KEYWORDS, FUNCTION_KEYWORDS } from "./config";
 
 export type SeniorityTier = "HIGH_SENIORITY" | "PROBABLE_SENIORITY" | "INFERRED" | "UNVERIFIED";
 
@@ -31,4 +31,18 @@ export function classifySeniority(
 
 export function domain(email: string): string {
   return domainFromEmail(email);
+}
+
+// Classify the business function from a job title / role, or null if unclear.
+// First match in FUNCTION_KEYWORDS order wins (most specific listed first).
+export function classifyFunction(
+  jobTitle: string | null | undefined,
+  role: string | null | undefined = null,
+): string | null {
+  const text = `${jobTitle ?? ""} ${role ?? ""}`.toLowerCase();
+  if (!text.trim()) return null;
+  for (const { label, keywords } of FUNCTION_KEYWORDS) {
+    if (keywords.some((kw) => text.includes(kw))) return label;
+  }
+  return null;
 }

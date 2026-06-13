@@ -13,6 +13,7 @@ const SENIORITY_STYLES: Record<string, string> = {
   HIGH_SENIORITY: "bg-violet-50 text-violet-700 border border-violet-500/20",
   PROBABLE_SENIORITY: "bg-sky-50 text-sky-700 border border-sky-500/20",
   INFERRED: "bg-zinc-100 text-zinc-500 border border-zinc-200",
+  UNVERIFIED: "bg-zinc-100 text-zinc-400 border border-zinc-200",
 };
 
 const RECOMMENDED_ACTION: Record<string, string> = {
@@ -122,6 +123,7 @@ function seniorityLabel(tier: string): string {
     case "HIGH_SENIORITY": return "Confirmed";
     case "PROBABLE_SENIORITY": return "Corporate";
     case "INFERRED": return "Inferred";
+    case "UNVERIFIED": return "Unverified";
     default: return tier;
   }
 }

@@ -48,9 +48,10 @@ export function PipelineControl({ onComplete }: Props) {
   // does one time-bounded slice server-side, so this never trips the 60s limit.
   const triggerDeepRun = async () => {
     setTriggering(true);
+    const deadline = Date.now() + 20 * 60 * 1000; // 20-minute wall-clock limit
     try {
       let first = true;
-      for (let i = 0; i < 250; i++) {
+      for (let i = 0; i < 250 && Date.now() < deadline; i++) {
         const res = await fetch(`/api/run-deep${first ? "?restart=1" : ""}`, { method: "POST" });
         first = false;
         if (!res.ok) break;

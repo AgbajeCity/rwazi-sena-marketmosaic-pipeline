@@ -62,7 +62,7 @@ export type Segment = "all" | "sena" | "upsell";
 export const SEGMENTS: { id: Segment; label: string; description: string }[] = [
   { id: "all", label: "All leads", description: "Every qualified lead" },
   { id: "sena", label: "Sena early-users", description: "Senior, budget-function, high-engagement" },
-  { id: "upsell", label: "Monetisation — upsell", description: "Highly-engaged corporate subscribers for Premium" },
+  { id: "upsell", label: "Rwazi monetisation", description: "High-engagement corporate contacts for Sena & AI product sales" },
 ];
 
 export function isSegment(value: string | null | undefined): value is Segment {
@@ -82,7 +82,7 @@ export function inSegment(lead: Lead, segment: Segment): boolean {
         BUDGET_FUNCTIONS.has(lead.func)
       );
     case "upsell":
-      // Premium-subscription upsell: highly engaged, corporate (not unverified).
+      // Rwazi enterprise monetisation: high-engagement corporate contacts for Sena & AI product sales.
       return (
         (lead.tier === "top" || lead.tier === "qualified") &&
         lead.seniorityTier !== "UNVERIFIED"

@@ -62,7 +62,7 @@ export type Segment = "all" | "sena" | "upsell";
 export const SEGMENTS: { id: Segment; label: string; description: string }[] = [
   { id: "all", label: "All leads", description: "Every qualified lead" },
   { id: "sena", label: "Sena early-users", description: "Senior, budget-function, high-engagement" },
-  { id: "upsell", label: "Subscription upsell", description: "Highly-engaged corporate subscribers" },
+  { id: "upsell", label: "Monetisation — upsell", description: "Highly-engaged corporate subscribers for Premium" },
 ];
 
 export function isSegment(value: string | null | undefined): value is Segment {

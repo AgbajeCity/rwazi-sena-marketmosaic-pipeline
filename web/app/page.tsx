@@ -117,7 +117,7 @@ export default function DashboardPage() {
               An internal tool built by the Rwazi Insights team. It scores Market Mosaic&rsquo;s
               130K+ subscribers on real engagement signals&nbsp;&mdash;&nbsp;reading, clicking,
               consistent interaction&nbsp;&mdash;&nbsp;and surfaces pre-qualified executives for
-              Sena&rsquo;s early user acquisition.
+              Sena&rsquo;s early-user acquisition and newsletter monetisation.
             </p>
           </div>
         </div>

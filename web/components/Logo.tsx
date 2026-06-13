@@ -17,6 +17,9 @@ export function MarketMosaicLogo({
 
   if (!failed) {
     return (
+      // Plain <img> on purpose: the onError handler degrades to the SVG lockup
+      // if the CDN is unreachable — a fallback next/image doesn't support cleanly.
+      // eslint-disable-next-line @next/next/no-img-element
       <img
         src={LOGO_URL}
         alt="Market Mosaic by Rwazi"

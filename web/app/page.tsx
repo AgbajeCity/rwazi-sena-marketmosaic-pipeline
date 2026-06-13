@@ -28,6 +28,9 @@ export default function DashboardPage() {
     setLoading(false);
   }, []);
 
+  // Initial load. setData/setLoading run after an await inside fetchLeads, so
+  // this is an async data sync — not the synchronous cascading render the rule guards against.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
 
   // Distinct countries present in the data, for the country filter dropdown.

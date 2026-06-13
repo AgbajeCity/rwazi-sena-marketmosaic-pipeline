@@ -20,6 +20,9 @@ export function PipelineControl({ onComplete }: Props) {
     if (res.ok) setStatus(await res.json());
   }, []);
 
+  // Initial load. setStatus runs after an await inside fetchStatus, so this is an
+  // async data sync — not the synchronous cascading render the rule guards against.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchStatus(); }, [fetchStatus]);
 
   // Poll while running

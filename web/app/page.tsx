@@ -43,12 +43,18 @@ export default function DashboardPage() {
       {/* ── Nav bar — white so the full-colour logo reads as designed ── */}
       <div className="border-b border-[#e5e7eb] bg-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
-          <MarketMosaicLogo />
+          <div className="flex items-center gap-3">
+            <MarketMosaicLogo />
+            <span className="hidden items-center gap-1.5 rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-[11px] font-medium text-zinc-500 sm:inline-flex">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#F15A29]" />
+              Internal tool · Insights team
+            </span>
+          </div>
           <a
             href="https://newsletter.rwazi.com/"
             target="_blank"
             rel="noreferrer"
-            className="rounded-full bg-[#F15A29] px-4 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-[#d94d22]"
+            className="rounded-full border border-zinc-300 px-4 py-1.5 text-xs font-semibold text-zinc-700 transition-colors hover:border-zinc-400 hover:bg-zinc-50"
           >
             Visit Market Mosaic ↗
           </a>
@@ -60,7 +66,7 @@ export default function DashboardPage() {
         <div className="mx-auto max-w-7xl px-6">
           <div className="pb-14 pt-12 text-center">
             <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-[#f5956b]">
-              Sena Prospect Pipeline
+              Internal · Sena Prospect Pipeline
             </p>
             <h1 className="mx-auto max-w-3xl text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl">
               Everyone has subscribers.
@@ -68,10 +74,10 @@ export default function DashboardPage() {
               <span className="text-[#F15A29]">Few know which ones decide.</span>
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-zinc-300 sm:text-base">
-              Sena scores Market Mosaic&rsquo;s 130K+ subscribers on real engagement
-              signals&nbsp;&mdash;&nbsp;reading, clicking, consistent
-              interaction&nbsp;&mdash;&nbsp;and surfaces pre-qualified executives already consuming
-              market intelligence.
+              An internal tool built by the Rwazi Insights team. It scores Market Mosaic&rsquo;s
+              130K+ subscribers on real engagement signals&nbsp;&mdash;&nbsp;reading, clicking,
+              consistent interaction&nbsp;&mdash;&nbsp;and surfaces pre-qualified executives for
+              Sena&rsquo;s early user acquisition.
             </p>
           </div>
         </div>
@@ -114,7 +120,9 @@ export default function DashboardPage() {
       <footer className="mt-8 border-t border-[#e5e7eb] py-6">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6">
           <MarketMosaicLogo className="opacity-70" />
-          <p className="text-xs text-zinc-400">Make your next big decision with certainty</p>
+          <p className="text-xs text-zinc-400">
+            Internal tool · Built by the Rwazi Insights team · Data from Market Mosaic
+          </p>
         </div>
       </footer>
     </div>

@@ -11,8 +11,9 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Market Mosaic — Sena Prospect Pipeline",
-  description: "Enterprise decision-makers surfaced from Market Mosaic subscribers · Rwazi",
+  title: "Sena Prospect Pipeline — Rwazi Insights (Internal)",
+  description:
+    "Internal Insights-team tool · Surfaces pre-qualified executives from Market Mosaic subscribers for Sena · Rwazi",
 };
 
 export default function RootLayout({

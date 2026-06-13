@@ -112,13 +112,13 @@ export default function DashboardPage() {
               Internal · Sena Prospect Pipeline
             </p>
             <h1 className="mx-auto max-w-3xl text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl">
-              Everyone has subscribers.
+              We have the subscribers.
               <br />
-              <span className="text-[#F15A29]">Few know which ones decide.</span>
+              <span className="text-[#F15A29]">Now we know which ones decide.</span>
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-zinc-300 sm:text-base">
-              An internal tool built by the Rwazi Insights team. It scores Market Mosaic&rsquo;s
-              130K+ subscribers on real engagement signals&nbsp;&mdash;&nbsp;reading, clicking,
+              An internal tool built by the Rwazi Insights team. It scores our 130K+
+              Market Mosaic subscribers on real engagement signals&nbsp;&mdash;&nbsp;reading, clicking,
               consistent interaction&nbsp;&mdash;&nbsp;and surfaces pre-qualified executives for
               Sena&rsquo;s early-user acquisition and Rwazi&rsquo;s enterprise monetisation.
             </p>

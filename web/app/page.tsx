@@ -67,9 +67,11 @@ export default function DashboardPage() {
               <br />
               <span className="text-[#F15A29]">Few know which ones decide.</span>
             </h1>
-            <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-zinc-300 sm:text-base">
-              Sena scores Market Mosaic subscribers on real engagement signals and surfaces the
-              senior decision-makers your team should be talking to.
+            <p className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-zinc-300 sm:text-base">
+              Sena scores Market Mosaic&rsquo;s 130K+ subscribers on real engagement
+              signals&nbsp;&mdash;&nbsp;reading, clicking, consistent
+              interaction&nbsp;&mdash;&nbsp;and surfaces pre-qualified executives already consuming
+              market intelligence.
             </p>
           </div>
         </div>

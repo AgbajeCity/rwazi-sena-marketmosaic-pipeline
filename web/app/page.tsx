@@ -118,8 +118,7 @@ export default function DashboardPage() {
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-zinc-300 sm:text-base">
               Built by the Rwazi Insights team. It scores our Market Mosaic subscribers
-              on real engagement and surfaces pre-qualified executives for Sena early-user
-              acquisition and Rwazi&rsquo;s enterprise monetisation.
+              and surfaces pre-qualified executives for Sena and Rwazi&rsquo;s enterprise monetisation.
             </p>
           </div>
         </div>

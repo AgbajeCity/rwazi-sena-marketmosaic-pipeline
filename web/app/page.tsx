@@ -4,12 +4,22 @@ import { useState, useEffect, useCallback } from "react";
 import { Lead } from "@/lib/pipeline";
 import { StatsCards } from "@/components/StatsCards";
 import { PipelineControl } from "@/components/PipelineControl";
-import { FilterBar, Filters } from "@/components/FilterBar";
+import { FilterBar } from "@/components/FilterBar";
 import { LeadsTable } from "@/components/LeadsTable";
 import { MarketMosaicLogo } from "@/components/Logo";
 import { BUDGET_FUNCTIONS } from "@/lib/config";
 import { countryName, displayName } from "@/lib/leads";
 import { regionForCountry, isEmergingMarket } from "@/lib/regions";
+import {
+  Filters,
+  SavedView,
+  DEFAULT_FILTERS,
+  loadFilters,
+  saveFilters,
+  loadViews,
+  saveViews,
+  newViewId,
+} from "@/lib/views";
 
 interface ApiResponse {
   leads: Lead[];
@@ -20,7 +30,11 @@ interface ApiResponse {
 export default function DashboardPage() {
   const [data, setData] = useState<ApiResponse>({ leads: [], totalProcessed: 0, runDate: null });
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState<Filters>({ tier: "", seniority: "", func: "", region: "", country: "", search: "" });
+  // Lazy-init from localStorage so each visitor reopens to their own last view.
+  // Safe against hydration: the first render shows the loading spinner (not the
+  // FilterBar), so the restored value never affects server/client markup.
+  const [filters, setFilters] = useState<Filters>(loadFilters);
+  const [savedViews, setSavedViews] = useState<SavedView[]>(loadViews);
 
   const fetchLeads = useCallback(async () => {
     const res = await fetch("/api/leads");
@@ -32,6 +46,24 @@ export default function DashboardPage() {
   // this is an async data sync — not the synchronous cascading render the rule guards against.
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
+
+  // Persist the active filters + saved views (write-only — no setState here).
+  useEffect(() => { saveFilters(filters); }, [filters]);
+  useEffect(() => { saveViews(savedViews); }, [savedViews]);
+
+  const handleSaveView = useCallback((name: string) => {
+    setSavedViews((prev) => [...prev, { id: newViewId(), name, filters }]);
+  }, [filters]);
+
+  const handleApplyView = useCallback((view: SavedView) => {
+    setFilters({ ...DEFAULT_FILTERS, ...view.filters });
+  }, []);
+
+  const handleDeleteView = useCallback((id: string) => {
+    setSavedViews((prev) => prev.filter((v) => v.id !== id));
+  }, []);
+
+  const handleReset = useCallback(() => setFilters(DEFAULT_FILTERS), []);
 
   // Distinct countries present in the data, for the country filter dropdown.
   const countries = (() => {
@@ -152,6 +184,11 @@ export default function DashboardPage() {
                 totalShown={filtered.length}
                 totalLeads={data.leads.length}
                 countries={countries}
+                savedViews={savedViews}
+                onSaveView={handleSaveView}
+                onApplyView={handleApplyView}
+                onDeleteView={handleDeleteView}
+                onReset={handleReset}
               />
               <LeadsTable leads={filtered} />
             </div>

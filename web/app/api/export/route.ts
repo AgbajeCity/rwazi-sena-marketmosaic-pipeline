@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { loadLeads } from "@/lib/storage";
 import seedLeads from "@/lib/seed-leads.json";
 import { PipelineResult } from "@/lib/pipeline";
-import { LEAD_SOURCE, recommendedAction, countryName, inSegment, isSegment, type Segment } from "@/lib/leads";
+import { LEAD_SOURCE, recommendedAction, countryName, displayName, inSegment, isSegment, type Segment } from "@/lib/leads";
 import { regionForCountry, isEmergingMarket } from "@/lib/regions";
 
 export const runtime = "nodejs";
@@ -51,7 +51,7 @@ export async function GET(req: Request) {
   const leads = result.leads.filter((l) => inSegment(l, segment));
 
   const rows = leads.map((l) => [
-    l.name ?? "",
+    displayName(l),
     l.email,
     l.company ?? "",
     l.industry ?? "",

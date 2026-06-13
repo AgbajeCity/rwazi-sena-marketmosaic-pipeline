@@ -1,7 +1,7 @@
 "use client";
 
 import { Lead } from "@/lib/pipeline";
-import { recommendedAction, countryName } from "@/lib/leads";
+import { recommendedAction, countryName, displayName } from "@/lib/leads";
 
 const TIER_STYLES: Record<string, string> = {
   top: "bg-[#fef0eb] text-[#d94d22] border border-[#F15A29]/25",
@@ -59,13 +59,9 @@ export function LeadsTable({ leads }: Props) {
             <tr key={lead.id} className="transition-colors hover:bg-zinc-50">
               <td className="max-w-[230px] px-4 py-3">
                 <div className="flex items-center gap-1.5">
-                  {lead.name ? (
-                    <span className="truncate font-medium text-zinc-900" title={lead.name}>
-                      {lead.name}
-                    </span>
-                  ) : (
-                    <span className="text-xs italic text-zinc-400">No name on file</span>
-                  )}
+                  <span className="truncate font-medium text-zinc-900" title={displayName(lead)}>
+                    {displayName(lead) || "—"}
+                  </span>
                   {lead.linkedinUrl && (
                     <a
                       href={normalizeUrl(lead.linkedinUrl)}

@@ -23,6 +23,27 @@ export function recommendedAction(tier: Lead["tier"]): string {
   }
 }
 
+// Derive a best-effort display name from an email local-part, e.g.
+// "john.doe@acme.com" → "John Doe", "j_smith2@x.io" → "J Smith". Used as a
+// fallback when the subscriber never filled in a name field.
+export function nameFromEmail(email: string): string {
+  const local = (email.split("@")[0] ?? "").replace(/\+.*/, "");
+  if (!local) return "";
+  const tokens = local
+    .split(/[._\-]+/)
+    .map((t) => t.replace(/\d+/g, ""))
+    .filter(Boolean);
+  return tokens
+    .map((t) => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase())
+    .join(" ");
+}
+
+// The name to show for a lead: a real name on file if present, otherwise one
+// inferred from the email address.
+export function displayName(lead: Pick<Lead, "name" | "email">): string {
+  return lead.name?.trim() || nameFromEmail(lead.email);
+}
+
 // Render an ISO country code as a full country name via the built-in Intl data
 // (works in both the browser and the Node export route — no static map needed).
 export function countryName(code: string | null | undefined): string {

@@ -8,7 +8,7 @@ import { FilterBar, Filters } from "@/components/FilterBar";
 import { LeadsTable } from "@/components/LeadsTable";
 import { MarketMosaicLogo } from "@/components/Logo";
 import { BUDGET_FUNCTIONS } from "@/lib/config";
-import { countryName } from "@/lib/leads";
+import { countryName, displayName } from "@/lib/leads";
 import { regionForCountry, isEmergingMarket } from "@/lib/regions";
 
 interface ApiResponse {
@@ -60,7 +60,7 @@ export default function DashboardPage() {
     if (filters.search) {
       const q = filters.search.toLowerCase();
       const haystack = [
-        l.name ?? "",
+        displayName(l),
         l.email,
         l.domain,
         l.company ?? "",

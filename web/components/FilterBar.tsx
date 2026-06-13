@@ -4,6 +4,7 @@ export interface Filters {
   tier: string;
   seniority: string;
   func: string;
+  country: string;
   search: string;
 }
 
@@ -12,9 +13,10 @@ interface Props {
   onChange: (f: Filters) => void;
   totalShown: number;
   totalLeads: number;
+  countries: { code: string; name: string }[];
 }
 
-export function FilterBar({ filters, onChange, totalShown, totalLeads }: Props) {
+export function FilterBar({ filters, onChange, totalShown, totalLeads, countries }: Props) {
   return (
     <div className="mm-card rounded-2xl px-4 py-3">
       <div className="flex flex-wrap items-center gap-3">
@@ -71,6 +73,17 @@ export function FilterBar({ filters, onChange, totalShown, totalLeads }: Props) 
             { value: "Insights/Research", label: "Insights / Research" },
           ]}
         />
+
+        {countries.length > 0 && (
+          <Select
+            value={filters.country}
+            onChange={(v) => onChange({ ...filters, country: v })}
+            options={[
+              { value: "", label: "All countries" },
+              ...countries.map((c) => ({ value: c.code, label: c.name })),
+            ]}
+          />
+        )}
 
         <span className="ml-auto rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs font-medium text-zinc-600">
           Showing <span className="font-semibold text-[#F15A29]">{totalShown.toLocaleString()}</span> of {totalLeads.toLocaleString()}

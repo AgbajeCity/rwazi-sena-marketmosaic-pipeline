@@ -1,7 +1,7 @@
 "use client";
 
 import { Lead } from "@/lib/pipeline";
-import { recommendedAction } from "@/lib/leads";
+import { recommendedAction, countryName } from "@/lib/leads";
 
 const TIER_STYLES: Record<string, string> = {
   top: "bg-[#fef0eb] text-[#d94d22] border border-[#F15A29]/25",
@@ -45,6 +45,7 @@ export function LeadsTable({ leads }: Props) {
             <th className="px-4 py-3 text-left font-semibold">Company / Title</th>
             <th className="px-4 py-3 text-left font-semibold">Function</th>
             <th className="px-4 py-3 text-left font-semibold">Seniority</th>
+            <th className="px-4 py-3 text-left font-semibold">Country</th>
             <th className="w-[64px] px-4 py-3 text-right font-semibold">Score</th>
             <th className="w-[64px] px-4 py-3 text-right font-semibold">Open %</th>
             <th className="w-[64px] px-4 py-3 text-right font-semibold">Click %</th>
@@ -84,6 +85,7 @@ export function LeadsTable({ leads }: Props) {
               <td className="max-w-[200px] px-4 py-3">
                 <span className="block truncate text-xs font-medium text-zinc-700" title={lead.company ?? lead.domain}>
                   {lead.company ?? lead.domain}
+                  {lead.industry && <span className="text-zinc-400"> · {lead.industry}</span>}
                 </span>
                 <span className="block truncate text-xs text-zinc-500" title={lead.jobTitle ?? ""}>
                   {lead.jobTitle ?? "—"}
@@ -101,6 +103,11 @@ export function LeadsTable({ leads }: Props) {
               <td className="px-4 py-3">
                 <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${SENIORITY_STYLES[lead.seniorityTier] ?? "bg-zinc-100 text-zinc-500"}`}>
                   {seniorityLabel(lead.seniorityTier)}
+                </span>
+              </td>
+              <td className="max-w-[140px] px-4 py-3">
+                <span className="block truncate text-xs text-zinc-600" title={lead.location ?? ""}>
+                  {countryName(lead.country) || "—"}
                 </span>
               </td>
               <td className="px-4 py-3 text-right">

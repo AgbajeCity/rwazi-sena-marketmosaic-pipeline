@@ -32,6 +32,7 @@ export interface SubscriberDetail {
   email: string;
   created: number; // epoch seconds
   status: string;
+  location?: string; // native beehiiv geolocation, e.g. "Skopje, Grad Skopje, MK"
   custom_fields?: { name: string; value: string }[];
   stats?: SubscriberStats;
 }

@@ -26,15 +26,26 @@ export interface Lead {
   topics: string | null;
   domain: string;
   company: string | null;
+  industry: string | null;
   jobTitle: string | null;
   func: string | null;
   seniorityTier: SeniorityTier;
+  location: string | null;
+  country: string | null;
   score: number;
   openRate: number;
   clickRate: number;
   tier: "top" | "qualified" | "warm" | "excluded";
   createdAt: string;
   subscriptionDays: number;
+}
+
+// Pull the ISO country code from beehiiv's "City, Region, CC" location string.
+function parseCountry(location: string | null | undefined): string | null {
+  if (!location) return null;
+  const parts = location.split(",").map((s) => s.trim()).filter(Boolean);
+  const last = parts[parts.length - 1];
+  return last && /^[A-Za-z]{2}$/.test(last) ? last.toUpperCase() : null;
 }
 
 export interface PipelineResult {
@@ -57,6 +68,9 @@ function scoreDetail(d: import("./beehiiv").SubscriberDetail): Lead | null {
   const jobTitle = extractCustomField(d, "job_title") ?? extractCustomField(d, "Job Title");
   const company = extractCustomField(d, "company") ?? extractCustomField(d, "Company");
   const role = extractCustomField(d, "role") ?? extractCustomField(d, "Role");
+  // Industry: not collected at signup today, but consumed here so it lights up
+  // automatically once an "industry" custom field is added to the beehiiv form.
+  const industry = extractCustomField(d, "industry") ?? extractCustomField(d, "Industry");
 
   // Name + outreach fields Market Mosaic collects on signup (used by the
   // marketing/sales teams who consume these leads, not for scoring).
@@ -72,6 +86,8 @@ function scoreDetail(d: import("./beehiiv").SubscriberDetail): Lead | null {
 
   const seniority = classifySeniority(d.email, jobTitle, role);
   const func = classifyFunction(jobTitle, role);
+  const location = d.location ?? null;
+  const country = parseCountry(d.location);
   const createdMs = (d.created ?? 0) * 1000;
   const score = engagementScore(openRate, clickRate, createdMs, seniority);
   const tier = leadTier(score);
@@ -86,9 +102,12 @@ function scoreDetail(d: import("./beehiiv").SubscriberDetail): Lead | null {
     topics,
     domain: domain(d.email),
     company,
+    industry,
     jobTitle,
     func,
     seniorityTier: seniority,
+    location,
+    country,
     score: Math.round(score * 10) / 10,
     openRate: Math.round(openRate * 10) / 10,
     clickRate: Math.round(clickRate * 10) / 10,

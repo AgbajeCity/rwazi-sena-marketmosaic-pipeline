@@ -8,6 +8,7 @@ import { FilterBar, Filters } from "@/components/FilterBar";
 import { LeadsTable } from "@/components/LeadsTable";
 import { MarketMosaicLogo } from "@/components/Logo";
 import { BUDGET_FUNCTIONS } from "@/lib/config";
+import { countryName } from "@/lib/leads";
 
 interface ApiResponse {
   leads: Lead[];
@@ -18,7 +19,7 @@ interface ApiResponse {
 export default function DashboardPage() {
   const [data, setData] = useState<ApiResponse>({ leads: [], totalProcessed: 0, runDate: null });
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState<Filters>({ tier: "", seniority: "", func: "", search: "" });
+  const [filters, setFilters] = useState<Filters>({ tier: "", seniority: "", func: "", country: "", search: "" });
 
   const fetchLeads = useCallback(async () => {
     const res = await fetch("/api/leads");
@@ -27,6 +28,15 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
+
+  // Distinct countries present in the data, for the country filter dropdown.
+  const countries = (() => {
+    const codes = new Set<string>();
+    for (const l of data.leads) if (l.country) codes.add(l.country);
+    return Array.from(codes)
+      .map((code) => ({ code, name: countryName(code) || code }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  })();
 
   const filtered = data.leads.filter((l) => {
     if (filters.tier && l.tier !== filters.tier) return false;
@@ -38,6 +48,7 @@ export default function DashboardPage() {
         return false;
       }
     }
+    if (filters.country && l.country !== filters.country) return false;
     if (filters.search) {
       const q = filters.search.toLowerCase();
       const haystack = [
@@ -45,9 +56,12 @@ export default function DashboardPage() {
         l.email,
         l.domain,
         l.company ?? "",
+        l.industry ?? "",
         l.jobTitle ?? "",
         l.func ?? "",
         l.topics ?? "",
+        l.location ?? "",
+        countryName(l.country),
       ]
         .join(" ")
         .toLowerCase();
@@ -128,6 +142,7 @@ export default function DashboardPage() {
                 onChange={setFilters}
                 totalShown={filtered.length}
                 totalLeads={data.leads.length}
+                countries={countries}
               />
               <LeadsTable leads={filtered} />
             </div>

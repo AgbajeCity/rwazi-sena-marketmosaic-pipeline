@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { loadLeads } from "@/lib/storage";
 import seedLeads from "@/lib/seed-leads.json";
 import { PipelineResult } from "@/lib/pipeline";
-import { LEAD_SOURCE, recommendedAction } from "@/lib/leads";
+import { LEAD_SOURCE, recommendedAction, countryName, inSegment, isSegment, type Segment } from "@/lib/leads";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,9 +15,12 @@ const HEADERS = [
   "name",
   "email",
   "company",
+  "industry",
   "job_title",
   "function",
   "seniority_tier",
+  "country",
+  "location",
   "linkedin_url",
   "score",
   "tier",
@@ -37,16 +40,23 @@ function dateOnly(iso: string | null | undefined): string {
   return isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 10);
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   const result: PipelineResult = (await loadLeads()) ?? (seedLeads as unknown as PipelineResult);
 
-  const rows = result.leads.map((l) => [
+  const segParam = new URL(req.url).searchParams.get("segment");
+  const segment: Segment = isSegment(segParam) ? segParam : "all";
+  const leads = result.leads.filter((l) => inSegment(l, segment));
+
+  const rows = leads.map((l) => [
     l.name ?? "",
     l.email,
     l.company ?? "",
+    l.industry ?? "",
     l.jobTitle ?? "",
     l.func ?? "",
     l.seniorityTier,
+    countryName(l.country),
+    l.location ?? "",
     l.linkedinUrl ?? "",
     l.score,
     l.tier,
@@ -65,10 +75,11 @@ export async function GET() {
     .join("\n");
 
   const date = result.runDate ? dateOnly(result.runDate) : new Date().toISOString().slice(0, 10);
+  const suffix = segment === "all" ? "" : `_${segment}`;
   return new NextResponse(csv, {
     headers: {
       "Content-Type": "text/csv",
-      "Content-Disposition": `attachment; filename="sena_leads_${date}.csv"`,
+      "Content-Disposition": `attachment; filename="sena_leads${suffix}_${date}.csv"`,
     },
   });
 }

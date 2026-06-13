@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { RunStatus } from "@/lib/storage";
+import { SEGMENTS } from "@/lib/leads";
 
 interface Props {
   onComplete: () => void;
@@ -92,17 +93,7 @@ export function PipelineControl({ onComplete }: Props) {
       </div>
 
       <div className="flex shrink-0 gap-2">
-        <a
-          href="/api/export"
-          className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-400 hover:bg-zinc-50"
-        >
-          <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
-          Export CSV
-        </a>
+        <ExportMenu />
         <button
           onClick={triggerDeepRun}
           disabled={isRunning}
@@ -130,6 +121,56 @@ export function PipelineControl({ onComplete }: Props) {
           )}
         </button>
       </div>
+    </div>
+  );
+}
+
+// CSV export with three ready-made segments (plus "all"). Each item is a plain
+// download link to /api/export?segment=… so the browser handles the file.
+function ExportMenu() {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-400 hover:bg-zinc-50"
+      >
+        <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="7 10 12 15 17 10" />
+          <line x1="12" y1="15" x2="12" y2="3" />
+        </svg>
+        Export CSV
+        <svg className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      {open && (
+        <div className="absolute right-0 z-20 mt-2 w-72 overflow-hidden rounded-xl border border-zinc-200 bg-white py-1 shadow-lg">
+          {SEGMENTS.map((s) => (
+            <a
+              key={s.id}
+              href={`/api/export?segment=${s.id}`}
+              onClick={() => setOpen(false)}
+              className="block px-4 py-2.5 transition-colors hover:bg-zinc-50"
+            >
+              <div className="text-sm font-medium text-zinc-800">{s.label}</div>
+              <div className="text-xs text-zinc-500">{s.description}</div>
+            </a>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

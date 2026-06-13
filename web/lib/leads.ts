@@ -8,14 +8,14 @@ import { BUDGET_FUNCTIONS } from "./config";
 // in Pipedrive/HubSpot instead of being drowned by cold-outreach contacts.
 export const LEAD_SOURCE = "Market Mosaic — Sena Prospect Pipeline";
 
-// Downstream action for each tier, framed for the real consumers of these leads:
-// Sena early-user acquisition and the product-marketing webinar.
+// Downstream action for each tier, framed for the real consumers of these
+// leads: Sena early-user acquisition.
 export function recommendedAction(tier: Lead["tier"]): string {
   switch (tier) {
     case "top":
-      return "Invite to Sena early access + webinar";
+      return "Invite to Sena early access";
     case "qualified":
-      return "Add to webinar / Sena outreach";
+      return "Add to Sena outreach";
     case "warm":
       return "Nurture via newsletter";
     default:
@@ -56,18 +56,17 @@ export function countryName(code: string | null | undefined): string {
 }
 
 // ── Export segments ───────────────────────────────────────────────────────
-// Three actionable cuts of the lead list, matching how the teams consume them.
-export type Segment = "all" | "sena" | "webinar" | "upsell";
+// Actionable cuts of the lead list, matching how the teams consume them.
+export type Segment = "all" | "sena" | "upsell";
 
 export const SEGMENTS: { id: Segment; label: string; description: string }[] = [
   { id: "all", label: "All leads", description: "Every qualified lead" },
   { id: "sena", label: "Sena early-users", description: "Senior, budget-function, high-engagement" },
-  { id: "webinar", label: "Webinar speakers", description: "Confirmed-senior, top-engagement contacts" },
   { id: "upsell", label: "Subscription upsell", description: "Highly-engaged corporate subscribers" },
 ];
 
 export function isSegment(value: string | null | undefined): value is Segment {
-  return value === "all" || value === "sena" || value === "webinar" || value === "upsell";
+  return value === "all" || value === "sena" || value === "upsell";
 }
 
 // Whether a lead belongs in a given segment.
@@ -82,9 +81,6 @@ export function inSegment(lead: Lead, segment: Segment): boolean {
         !!lead.func &&
         BUDGET_FUNCTIONS.has(lead.func)
       );
-    case "webinar":
-      // Speaker / amplifier roster: confirmed-senior and most engaged.
-      return lead.seniorityTier === "HIGH_SENIORITY" && lead.tier === "top";
     case "upsell":
       // Premium-subscription upsell: highly engaged, corporate (not unverified).
       return (

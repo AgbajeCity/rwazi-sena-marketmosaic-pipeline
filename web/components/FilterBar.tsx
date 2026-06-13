@@ -1,9 +1,12 @@
 "use client";
 
+import { REGIONS } from "@/lib/regions";
+
 export interface Filters {
   tier: string;
   seniority: string;
   func: string;
+  region: string;
   country: string;
   search: string;
 }
@@ -73,6 +76,18 @@ export function FilterBar({ filters, onChange, totalShown, totalLeads, countries
             { value: "Insights/Research", label: "Insights / Research" },
           ]}
         />
+
+        {countries.length > 0 && (
+          <Select
+            value={filters.region}
+            onChange={(v) => onChange({ ...filters, region: v })}
+            options={[
+              { value: "", label: "All regions" },
+              { value: "__emerging__", label: "Emerging markets" },
+              ...REGIONS.map((r) => ({ value: r, label: r })),
+            ]}
+          />
+        )}
 
         {countries.length > 0 && (
           <Select

@@ -9,6 +9,7 @@ import { LeadsTable } from "@/components/LeadsTable";
 import { MarketMosaicLogo } from "@/components/Logo";
 import { BUDGET_FUNCTIONS } from "@/lib/config";
 import { countryName } from "@/lib/leads";
+import { regionForCountry, isEmergingMarket } from "@/lib/regions";
 
 interface ApiResponse {
   leads: Lead[];
@@ -19,7 +20,7 @@ interface ApiResponse {
 export default function DashboardPage() {
   const [data, setData] = useState<ApiResponse>({ leads: [], totalProcessed: 0, runDate: null });
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState<Filters>({ tier: "", seniority: "", func: "", country: "", search: "" });
+  const [filters, setFilters] = useState<Filters>({ tier: "", seniority: "", func: "", region: "", country: "", search: "" });
 
   const fetchLeads = useCallback(async () => {
     const res = await fetch("/api/leads");
@@ -45,6 +46,13 @@ export default function DashboardPage() {
       if (filters.func === "__budget__") {
         if (!l.func || !BUDGET_FUNCTIONS.has(l.func)) return false;
       } else if (l.func !== filters.func) {
+        return false;
+      }
+    }
+    if (filters.region) {
+      if (filters.region === "__emerging__") {
+        if (!isEmergingMarket(l.country)) return false;
+      } else if (regionForCountry(l.country) !== filters.region) {
         return false;
       }
     }

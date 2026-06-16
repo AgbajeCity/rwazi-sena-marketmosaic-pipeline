@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useCallback } from "react";
 import { Lead } from "@/lib/pipeline";
 import { recommendedAction, countryName, displayName } from "@/lib/leads";
 
@@ -17,148 +18,318 @@ const SENIORITY_STYLES: Record<string, string> = {
   UNVERIFIED: "bg-zinc-100 text-zinc-400 border border-zinc-200",
 };
 
+type SortKey = "score" | "openRate" | "clickRate" | "days" | "name" | "company" | null;
+type SortDir = "asc" | "desc";
+
 interface Props {
   leads: Lead[];
 }
 
+function ScoreBar({ score }: { score: number }) {
+  const pct = Math.min(100, Math.max(0, score));
+  const color = score >= 70 ? "#F15A29" : score >= 50 ? "#10b981" : score >= 20 ? "#f59e0b" : "#94a3b8";
+  return (
+    <div className="flex items-center gap-2">
+      <span className="font-semibold tabular-nums" style={{ color }}>
+        {score.toFixed(1)}
+      </span>
+      <div className="w-16 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+        <div
+          className="h-full rounded-full transition-all"
+          style={{ width: `${pct}%`, background: color }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function CopyEmail({ email }: { email: string }) {
+  const [copied, setCopied] = useState(false);
+  const copy = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      navigator.clipboard.writeText(email).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+      });
+    },
+    [email]
+  );
+  return (
+    <button
+      onClick={copy}
+      title={copied ? "Copied!" : "Copy email"}
+      className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity text-zinc-400 hover:text-[#F15A29] focus:outline-none"
+    >
+      {copied ? (
+        <svg className="w-3.5 h-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+      ) : (
+        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        </svg>
+      )}
+    </button>
+  );
+}
+
+function DetailPanel({ lead, rank, onClose }: { lead: Lead; rank: number; onClose: () => void }) {
+  const name = displayName(lead);
+  const country = countryName(lead.country);
+  const action = recommendedAction(lead.tier);
+  const tierLabel = lead.tier === "top" ? "High-Priority" : lead.tier === "qualified" ? "Qualified" : lead.tier === "warm" ? "Warm" : "Excluded";
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end">
+      <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative z-10 w-full max-w-md bg-white shadow-2xl flex flex-col h-full overflow-y-auto">
+        <div className="px-6 pt-6 pb-4 border-b border-zinc-100 flex items-start justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">#{rank} Prospect</span>
+              <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${TIER_STYLES[lead.tier] || TIER_STYLES.excluded}`}>
+                {tierLabel}
+              </span>
+            </div>
+            <h2 className="text-lg font-bold text-zinc-900">{name}</h2>
+            <p className="text-sm text-zinc-500 mt-0.5">{lead.title || "—"}</p>
+          </div>
+          <button onClick={onClose} className="mt-1 p-1.5 rounded-lg text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="px-6 py-4 bg-gradient-to-r from-zinc-950 to-zinc-800 text-white">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs text-zinc-400 uppercase tracking-wider font-semibold">Prospect Score</span>
+            <span className="text-3xl font-black" style={{ color: lead.score >= 70 ? "#F15A29" : lead.score >= 50 ? "#10b981" : "#f59e0b" }}>
+              {lead.score.toFixed(1)}
+            </span>
+          </div>
+          <div className="w-full h-2 bg-zinc-700 rounded-full overflow-hidden">
+            <div className="h-full rounded-full" style={{ width: `${Math.min(100, lead.score)}%`, background: lead.score >= 70 ? "#F15A29" : lead.score >= 50 ? "#10b981" : "#f59e0b" }} />
+          </div>
+          <p className="text-xs text-zinc-400 mt-2">{action}</p>
+        </div>
+        <div className="px-6 py-4 flex flex-col gap-4">
+          <div>
+            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Contact</p>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-zinc-500">Email</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-sm text-zinc-900 font-medium">{lead.email}</span>
+                  <CopyEmail email={lead.email} />
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-zinc-500">Company</span>
+                <span className="text-sm text-zinc-900 font-medium">{lead.company || "—"}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-zinc-500">Country</span>
+                <span className="text-sm text-zinc-900 font-medium">{country || lead.country || "—"}</span>
+              </div>
+              {lead.industry && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-zinc-500">Industry</span>
+                  <span className="text-sm text-zinc-900 font-medium">{lead.industry}</span>
+                </div>
+              )}
+            </div>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Engagement</p>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-zinc-50 rounded-xl p-3 text-center">
+                <p className="text-lg font-bold text-zinc-900">{lead.openRate != null ? `${(lead.openRate * 100).toFixed(1)}%` : "—"}</p>
+                <p className="text-xs text-zinc-500 mt-0.5">Open rate</p>
+              </div>
+              <div className="bg-zinc-50 rounded-xl p-3 text-center">
+                <p className="text-lg font-bold text-zinc-900">{lead.clickRate != null ? `${(lead.clickRate * 100).toFixed(1)}%` : "—"}</p>
+                <p className="text-xs text-zinc-500 mt-0.5">Click rate</p>
+              </div>
+              <div className="bg-zinc-50 rounded-xl p-3 text-center">
+                <p className="text-lg font-bold text-zinc-900">{lead.days ?? "—"}</p>
+                <p className="text-xs text-zinc-500 mt-0.5">Days active</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Classification</p>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-zinc-500">Seniority</span>
+                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${SENIORITY_STYLES[lead.seniority] || SENIORITY_STYLES.UNVERIFIED}`}>
+                  {lead.seniority === "HIGH_SENIORITY" ? "Confirmed" : lead.seniority === "PROBABLE_SENIORITY" ? "Corporate" : lead.seniority === "INFERRED" ? "Inferred" : "Unverified"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-zinc-500">Function</span>
+                <span className="text-sm text-zinc-900 font-medium">{lead.function || "—"}</span>
+              </div>
+            </div>
+          </div>
+          <div className="bg-[#fef0eb] border border-[#F15A29]/20 rounded-xl p-4">
+            <p className="text-xs font-semibold text-[#d94d22] uppercase tracking-wider mb-1">Recommended Action</p>
+            <p className="text-sm text-zinc-800 font-medium">{action}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type SortableHeader = { key: SortKey; label: string };
+
+const HEADERS: SortableHeader[] = [
+  { key: "name", label: "Contact" },
+  { key: "company", label: "Company / Title" },
+  { key: null, label: "Function" },
+  { key: null, label: "Seniority" },
+  { key: null, label: "Country" },
+  { key: "score", label: "Score" },
+  { key: "openRate", label: "Open %" },
+  { key: "clickRate", label: "Click %" },
+  { key: "days", label: "Days" },
+  { key: null, label: "Tier" },
+  { key: null, label: "Recommended action" },
+];
+
 export function LeadsTable({ leads }: Props) {
+  const [sortKey, setSortKey] = useState<SortKey>("score");
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
+  const [selected, setSelected] = useState<Lead | null>(null);
+
+  const handleSort = useCallback(
+    (key: SortKey) => {
+      if (!key) return;
+      if (sortKey === key) {
+        setSortDir((d) => (d === "desc" ? "asc" : "desc"));
+      } else {
+        setSortKey(key);
+        setSortDir("desc");
+      }
+    },
+    [sortKey]
+  );
+
+  const sorted = [...leads].sort((a, b) => {
+    if (!sortKey) return 0;
+    let av: number | string = 0;
+    let bv: number | string = 0;
+    if (sortKey === "score") { av = a.score; bv = b.score; }
+    else if (sortKey === "openRate") { av = a.openRate ?? -1; bv = b.openRate ?? -1; }
+    else if (sortKey === "clickRate") { av = a.clickRate ?? -1; bv = b.clickRate ?? -1; }
+    else if (sortKey === "days") { av = a.days ?? -1; bv = b.days ?? -1; }
+    else if (sortKey === "name") { av = displayName(a).toLowerCase(); bv = displayName(b).toLowerCase(); }
+    else if (sortKey === "company") { av = (a.company || "").toLowerCase(); bv = (b.company || "").toLowerCase(); }
+    if (typeof av === "string" && typeof bv === "string") {
+      return sortDir === "asc" ? av.localeCompare(bv) : bv.localeCompare(av);
+    }
+    return sortDir === "asc" ? (av as number) - (bv as number) : (bv as number) - (av as number);
+  });
+
+  const selectedRank = selected ? sorted.findIndex((l) => l.email === selected.email) + 1 : 0;
+
   if (leads.length === 0) {
     return (
-      <div className="mm-card rounded-2xl border-dashed p-14 text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-zinc-200 bg-zinc-50">
-          <svg className="h-6 w-6 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-          </svg>
-        </div>
-        <p className="text-sm font-medium text-zinc-700">No prospects match your filters</p>
-        <p className="mt-1 text-xs text-zinc-500">Try adjusting the search or filter options above.</p>
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <svg className="w-10 h-10 text-zinc-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <p className="text-sm font-medium text-zinc-600">No prospects match your filters</p>
+        <p className="text-xs text-zinc-400 mt-1">Try adjusting the search or filter options above.</p>
       </div>
     );
   }
 
   return (
-    <div className="mm-card overflow-x-auto rounded-2xl">
-      <table className="min-w-full text-sm">
-        <thead className="sticky top-0 z-10 bg-zinc-50 text-xs uppercase tracking-wide text-zinc-500 shadow-[0_1px_0_0_rgba(0,0,0,0.06)]">
-          <tr>
-            <th className="w-[230px] px-4 py-3 text-left font-semibold">Contact</th>
-            <th className="px-4 py-3 text-left font-semibold">Company / Title</th>
-            <th className="px-4 py-3 text-left font-semibold">Function</th>
-            <th className="px-4 py-3 text-left font-semibold">Seniority</th>
-            <th className="px-4 py-3 text-left font-semibold">Country</th>
-            <th className="w-[64px] px-4 py-3 text-right font-semibold">Score</th>
-            <th className="w-[64px] px-4 py-3 text-right font-semibold">Open %</th>
-            <th className="w-[64px] px-4 py-3 text-right font-semibold">Click %</th>
-            <th className="w-[56px] px-4 py-3 text-right font-semibold">Days</th>
-            <th className="px-4 py-3 text-left font-semibold">Tier</th>
-            <th className="px-4 py-3 text-left font-semibold">Recommended action</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-zinc-100">
-          {leads.map((lead) => (
-            <tr key={lead.id} className="transition-colors hover:bg-zinc-50">
-              <td className="max-w-[230px] px-4 py-3">
-                <div className="flex items-center gap-1.5">
-                  <span className="truncate font-medium text-zinc-900" title={displayName(lead)}>
-                    {displayName(lead) || "—"}
+    <>
+      <div className="overflow-x-auto rounded-xl border border-zinc-100">
+        <table className="w-full text-sm border-collapse">
+          <thead>
+            <tr className="border-b border-zinc-100 bg-zinc-50/70">
+              {HEADERS.map(({ key, label }) => (
+                <th
+                  key={label}
+                  onClick={() => handleSort(key)}
+                  className={`px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider whitespace-nowrap select-none ${key ? "cursor-pointer hover:text-zinc-800 hover:bg-zinc-100 transition-colors" : ""}`}
+                >
+                  <span className="flex items-center gap-1">
+                    {label}
+                    {key && sortKey === key && (
+                      <span className="text-[#F15A29]">{sortDir === "desc" ? "↓" : "↑"}</span>
+                    )}
                   </span>
-                  {lead.linkedinUrl && (
-                    <a
-                      href={normalizeUrl(lead.linkedinUrl)}
-                      target="_blank"
-                      rel="noreferrer"
-                      title="LinkedIn profile"
-                      className="shrink-0 text-zinc-400 transition-colors hover:text-[#0a66c2]"
-                    >
-                      <LinkedInIcon />
-                    </a>
-                  )}
-                </div>
-                <span className="block truncate font-mono text-[11px] text-zinc-500" title={lead.email}>
-                  {lead.email}
-                </span>
-              </td>
-              <td className="max-w-[200px] px-4 py-3">
-                <span className="block truncate text-xs font-medium text-zinc-700" title={lead.company ?? lead.domain}>
-                  {lead.company ?? lead.domain}
-                  {lead.industry && <span className="text-zinc-400"> · {lead.industry}</span>}
-                </span>
-                <span className="block truncate text-xs text-zinc-500" title={lead.jobTitle ?? ""}>
-                  {lead.jobTitle ?? "—"}
-                </span>
-              </td>
-              <td className="px-4 py-3">
-                {lead.func ? (
-                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${functionStyle(lead.func)}`}>
-                    {lead.func}
-                  </span>
-                ) : (
-                  <span className="text-xs text-zinc-400">—</span>
-                )}
-              </td>
-              <td className="px-4 py-3">
-                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${SENIORITY_STYLES[lead.seniorityTier] ?? "bg-zinc-100 text-zinc-500"}`}>
-                  {seniorityLabel(lead.seniorityTier)}
-                </span>
-              </td>
-              <td className="max-w-[140px] px-4 py-3">
-                <span className="block truncate text-xs text-zinc-600" title={lead.location ?? ""}>
-                  {countryName(lead.country) || "—"}
-                </span>
-              </td>
-              <td className="px-4 py-3 text-right">
-                <span className="font-bold tabular-nums text-[#F15A29]">{lead.score.toFixed(1)}</span>
-              </td>
-              <td className="px-4 py-3 text-right tabular-nums text-zinc-600">
-                {lead.openRate.toFixed(1)}%
-              </td>
-              <td className="px-4 py-3 text-right tabular-nums text-zinc-600">
-                {lead.clickRate.toFixed(1)}%
-              </td>
-              <td className="px-4 py-3 text-right tabular-nums text-zinc-500">
-                {lead.subscriptionDays}
-              </td>
-              <td className="px-4 py-3">
-                <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${TIER_STYLES[lead.tier] ?? "bg-zinc-100 text-zinc-500"}`}>
-                  {lead.tier}
-                </span>
-              </td>
-              <td className="whitespace-nowrap px-4 py-3 text-xs text-zinc-500">
-                {recommendedAction(lead.tier)}
-              </td>
+                </th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
+          </thead>
+          <tbody>
+            {sorted.map((lead, idx) => {
+              const name = displayName(lead);
+              const country = countryName(lead.country);
+              const action = recommendedAction(lead.tier);
+              const seniority = lead.seniority;
+              const seniorityLabel =
+                seniority === "HIGH_SENIORITY" ? "Confirmed" :
+                seniority === "PROBABLE_SENIORITY" ? "Corporate domain" :
+                seniority === "INFERRED" ? "Inferred" : "—";
+              const openPct = lead.openRate != null ? `${(lead.openRate * 100).toFixed(1)}%` : "—";
+              const clickPct = lead.clickRate != null ? `${(lead.clickRate * 100).toFixed(1)}%` : "—";
+              const isSelected = selected?.email === lead.email;
 
-function seniorityLabel(tier: string): string {
-  switch (tier) {
-    case "HIGH_SENIORITY": return "Confirmed";
-    case "PROBABLE_SENIORITY": return "Corporate";
-    case "INFERRED": return "Inferred";
-    case "UNVERIFIED": return "Unverified";
-    default: return tier;
-  }
-}
-
-// Budget-holding functions (Sena's ICP) read in coral; Insights/Research — the
-// deprioritised analyst segment — reads in muted grey.
-function functionStyle(func: string): string {
-  if (func === "Insights/Research") return "bg-zinc-100 text-zinc-500 border border-zinc-200";
-  return "bg-[#fef0eb] text-[#d94d22] border border-[#F15A29]/20";
-}
-
-function normalizeUrl(url: string): string {
-  return /^https?:\/\//i.test(url) ? url : `https://${url}`;
-}
-
-function LinkedInIcon() {
-  return (
-    <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14zM8.34 9.67H5.67V18h2.67V9.67zM7 5.5a1.55 1.55 0 1 0 0 3.1 1.55 1.55 0 0 0 0-3.1zM18.33 18v-4.57c0-2.4-1.28-3.52-2.99-3.52-1.38 0-2 .76-2.34 1.29v-1.1h-2.67c.04.75 0 8.4 0 8.4h2.67v-4.69c0-.24.02-.48.09-.65.19-.48.63-.97 1.36-.97.96 0 1.34.73 1.34 1.8V18h2.84z" />
-    </svg>
+              return (
+                <tr
+                  key={lead.email}
+                  onClick={() => setSelected(isSelected ? null : lead)}
+                  className={`border-b border-zinc-50 group cursor-pointer transition-colors ${isSelected ? "bg-orange-50/60" : "hover:bg-zinc-50"}`}
+                >
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-zinc-400 font-mono w-5 text-right shrink-0">#{idx + 1}</span>
+                      <div>
+                        <p className="font-semibold text-zinc-900 leading-snug">{name}</p>
+                        <div className="flex items-center text-xs text-zinc-400 mt-0.5">
+                          <span className="truncate max-w-[200px]">{lead.email}</span>
+                          <CopyEmail email={lead.email} />
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <p className="font-medium text-zinc-800 leading-snug">{lead.company || "—"}</p>
+                    <p className="text-xs text-zinc-400 mt-0.5 max-w-[220px] truncate">{lead.title || ""}</p>
+                  </td>
+                  <td className="px-4 py-3 text-zinc-600 whitespace-nowrap">{lead.function || "—"}</td>
+                  <td className="px-4 py-3">
+                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${SENIORITY_STYLES[seniority] || SENIORITY_STYLES.UNVERIFIED}`}>
+                      {seniorityLabel}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-zinc-600 whitespace-nowrap">{country || lead.country || "—"}</td>
+                  <td className="px-4 py-3"><ScoreBar score={lead.score} /></td>
+                  <td className="px-4 py-3 tabular-nums text-zinc-700">{openPct}</td>
+                  <td className="px-4 py-3 tabular-nums text-zinc-700">{clickPct}</td>
+                  <td className="px-4 py-3 tabular-nums text-zinc-700">{lead.days ?? "—"}</td>
+                  <td className="px-4 py-3">
+                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full capitalize ${TIER_STYLES[lead.tier] || TIER_STYLES.excluded}`}>
+                      {lead.tier === "top" ? "Top" : lead.tier === "qualified" ? "Qualified" : lead.tier === "warm" ? "Warm" : lead.tier}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-zinc-600 whitespace-nowrap">{action}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      {selected && (
+        <DetailPanel lead={selected} rank={selectedRank} onClose={() => setSelected(null)} />
+      )}
+    </>
   );
 }

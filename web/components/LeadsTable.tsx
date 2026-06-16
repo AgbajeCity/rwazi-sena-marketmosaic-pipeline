@@ -18,7 +18,14 @@ const SENIORITY_STYLES: Record<string, string> = {
   UNVERIFIED: "bg-zinc-100 text-zinc-400 border border-zinc-200",
 };
 
-type SortKey = "score" | "openRate" | "clickRate" | "days" | "name" | "company" | null;
+function seniorityLabel(tier: string): string {
+  if (tier === "HIGH_SENIORITY") return "Confirmed";
+  if (tier === "PROBABLE_SENIORITY") return "Corporate domain";
+  if (tier === "INFERRED") return "Inferred";
+  return "—";
+}
+
+type SortKey = "score" | "openRate" | "clickRate" | "subscriptionDays" | "name" | "company" | null;
 type SortDir = "asc" | "desc";
 
 interface Props {
@@ -33,7 +40,7 @@ function ScoreBar({ score }: { score: number }) {
       <span className="font-semibold tabular-nums" style={{ color }}>
         {score.toFixed(1)}
       </span>
-      <div className="w-16 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+      <div className="w-14 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
         <div
           className="h-full rounded-full transition-all"
           style={{ width: `${pct}%`, background: color }}
@@ -59,7 +66,7 @@ function CopyEmail({ email }: { email: string }) {
     <button
       onClick={copy}
       title={copied ? "Copied!" : "Copy email"}
-      className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity text-zinc-400 hover:text-[#F15A29] focus:outline-none"
+      className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity text-zinc-400 hover:text-[#F15A29] focus:outline-none shrink-0"
     >
       {copied ? (
         <svg className="w-3.5 h-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -84,6 +91,7 @@ function DetailPanel({ lead, rank, onClose }: { lead: Lead; rank: number; onClos
     <div className="fixed inset-0 z-50 flex justify-end">
       <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
       <div className="relative z-10 w-full max-w-md bg-white shadow-2xl flex flex-col h-full overflow-y-auto">
+        {/* Header */}
         <div className="px-6 pt-6 pb-4 border-b border-zinc-100 flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
@@ -93,7 +101,7 @@ function DetailPanel({ lead, rank, onClose }: { lead: Lead; rank: number; onClos
               </span>
             </div>
             <h2 className="text-lg font-bold text-zinc-900">{name}</h2>
-            <p className="text-sm text-zinc-500 mt-0.5">{lead.title || "—"}</p>
+            <p className="text-sm text-zinc-500 mt-0.5">{lead.jobTitle || "—"}</p>
           </div>
           <button onClick={onClose} className="mt-1 p-1.5 rounded-lg text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -101,6 +109,8 @@ function DetailPanel({ lead, rank, onClose }: { lead: Lead; rank: number; onClos
             </svg>
           </button>
         </div>
+
+        {/* Score spotlight */}
         <div className="px-6 py-4 bg-gradient-to-r from-zinc-950 to-zinc-800 text-white">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-zinc-400 uppercase tracking-wider font-semibold">Prospect Score</span>
@@ -113,14 +123,17 @@ function DetailPanel({ lead, rank, onClose }: { lead: Lead; rank: number; onClos
           </div>
           <p className="text-xs text-zinc-400 mt-2">{action}</p>
         </div>
+
+        {/* Details grid */}
         <div className="px-6 py-4 flex flex-col gap-4">
+          {/* Contact */}
           <div>
             <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Contact</p>
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-zinc-500">Email</span>
-                <div className="flex items-center gap-1">
-                  <span className="text-sm text-zinc-900 font-medium">{lead.email}</span>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-sm text-zinc-500 shrink-0">Email</span>
+                <div className="flex items-center gap-1 min-w-0">
+                  <span className="text-sm text-zinc-900 font-medium truncate">{lead.email}</span>
                   <CopyEmail email={lead.email} />
                 </div>
               </div>
@@ -138,40 +151,58 @@ function DetailPanel({ lead, rank, onClose }: { lead: Lead; rank: number; onClos
                   <span className="text-sm text-zinc-900 font-medium">{lead.industry}</span>
                 </div>
               )}
+              {lead.linkedinUrl && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-zinc-500">LinkedIn</span>
+                  <a href={lead.linkedinUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="text-sm text-[#F15A29] font-medium hover:underline">View profile ↗</a>
+                </div>
+              )}
             </div>
           </div>
+
+          {/* Engagement */}
           <div>
             <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Engagement</p>
             <div className="grid grid-cols-3 gap-3">
               <div className="bg-zinc-50 rounded-xl p-3 text-center">
-                <p className="text-lg font-bold text-zinc-900">{lead.openRate != null ? `${(lead.openRate * 100).toFixed(1)}%` : "—"}</p>
+                <p className="text-lg font-bold text-zinc-900">{lead.openRate != null ? `${lead.openRate.toFixed(1)}%` : "—"}</p>
                 <p className="text-xs text-zinc-500 mt-0.5">Open rate</p>
               </div>
               <div className="bg-zinc-50 rounded-xl p-3 text-center">
-                <p className="text-lg font-bold text-zinc-900">{lead.clickRate != null ? `${(lead.clickRate * 100).toFixed(1)}%` : "—"}</p>
+                <p className="text-lg font-bold text-zinc-900">{lead.clickRate != null ? `${lead.clickRate.toFixed(1)}%` : "—"}</p>
                 <p className="text-xs text-zinc-500 mt-0.5">Click rate</p>
               </div>
               <div className="bg-zinc-50 rounded-xl p-3 text-center">
-                <p className="text-lg font-bold text-zinc-900">{lead.days ?? "—"}</p>
+                <p className="text-lg font-bold text-zinc-900">{lead.subscriptionDays ?? "—"}</p>
                 <p className="text-xs text-zinc-500 mt-0.5">Days active</p>
               </div>
             </div>
           </div>
+
+          {/* Classification */}
           <div>
             <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Classification</p>
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-zinc-500">Seniority</span>
-                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${SENIORITY_STYLES[lead.seniority] || SENIORITY_STYLES.UNVERIFIED}`}>
-                  {lead.seniority === "HIGH_SENIORITY" ? "Confirmed" : lead.seniority === "PROBABLE_SENIORITY" ? "Corporate" : lead.seniority === "INFERRED" ? "Inferred" : "Unverified"}
+                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${SENIORITY_STYLES[lead.seniorityTier] || SENIORITY_STYLES.UNVERIFIED}`}>
+                  {seniorityLabel(lead.seniorityTier)}
                 </span>
               </div>
+              {lead.func && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-zinc-500">Function</span>
+                  <span className="text-sm text-zinc-900 font-medium">{lead.func}</span>
+                </div>
+              )}
               <div className="flex items-center justify-between">
-                <span className="text-sm text-zinc-500">Function</span>
-                <span className="text-sm text-zinc-900 font-medium">{lead.function || "—"}</span>
+                <span className="text-sm text-zinc-500">Domain</span>
+                <span className="text-sm text-zinc-900 font-medium">{lead.domain || "—"}</span>
               </div>
             </div>
           </div>
+
+          {/* Recommended action */}
           <div className="bg-[#fef0eb] border border-[#F15A29]/20 rounded-xl p-4">
             <p className="text-xs font-semibold text-[#d94d22] uppercase tracking-wider mb-1">Recommended Action</p>
             <p className="text-sm text-zinc-800 font-medium">{action}</p>
@@ -193,7 +224,7 @@ const HEADERS: SortableHeader[] = [
   { key: "score", label: "Score" },
   { key: "openRate", label: "Open %" },
   { key: "clickRate", label: "Click %" },
-  { key: "days", label: "Days" },
+  { key: "subscriptionDays", label: "Days" },
   { key: null, label: "Tier" },
   { key: null, label: "Recommended action" },
 ];
@@ -223,7 +254,7 @@ export function LeadsTable({ leads }: Props) {
     if (sortKey === "score") { av = a.score; bv = b.score; }
     else if (sortKey === "openRate") { av = a.openRate ?? -1; bv = b.openRate ?? -1; }
     else if (sortKey === "clickRate") { av = a.clickRate ?? -1; bv = b.clickRate ?? -1; }
-    else if (sortKey === "days") { av = a.days ?? -1; bv = b.days ?? -1; }
+    else if (sortKey === "subscriptionDays") { av = a.subscriptionDays ?? -1; bv = b.subscriptionDays ?? -1; }
     else if (sortKey === "name") { av = displayName(a).toLowerCase(); bv = displayName(b).toLowerCase(); }
     else if (sortKey === "company") { av = (a.company || "").toLowerCase(); bv = (b.company || "").toLowerCase(); }
     if (typeof av === "string" && typeof bv === "string") {
@@ -273,13 +304,8 @@ export function LeadsTable({ leads }: Props) {
               const name = displayName(lead);
               const country = countryName(lead.country);
               const action = recommendedAction(lead.tier);
-              const seniority = lead.seniority;
-              const seniorityLabel =
-                seniority === "HIGH_SENIORITY" ? "Confirmed" :
-                seniority === "PROBABLE_SENIORITY" ? "Corporate domain" :
-                seniority === "INFERRED" ? "Inferred" : "—";
-              const openPct = lead.openRate != null ? `${(lead.openRate * 100).toFixed(1)}%` : "—";
-              const clickPct = lead.clickRate != null ? `${(lead.clickRate * 100).toFixed(1)}%` : "—";
+              const openPct = lead.openRate != null ? `${lead.openRate.toFixed(1)}%` : "—";
+              const clickPct = lead.clickRate != null ? `${lead.clickRate.toFixed(1)}%` : "—";
               const isSelected = selected?.email === lead.email;
 
               return (
@@ -288,38 +314,49 @@ export function LeadsTable({ leads }: Props) {
                   onClick={() => setSelected(isSelected ? null : lead)}
                   className={`border-b border-zinc-50 group cursor-pointer transition-colors ${isSelected ? "bg-orange-50/60" : "hover:bg-zinc-50"}`}
                 >
+                  {/* Contact */}
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-zinc-400 font-mono w-5 text-right shrink-0">#{idx + 1}</span>
-                      <div>
-                        <p className="font-semibold text-zinc-900 leading-snug">{name}</p>
+                      <div className="min-w-0">
+                        <p className="font-semibold text-zinc-900 leading-snug truncate max-w-[180px]">{name}</p>
                         <div className="flex items-center text-xs text-zinc-400 mt-0.5">
-                          <span className="truncate max-w-[200px]">{lead.email}</span>
+                          <span className="truncate max-w-[180px]">{lead.email}</span>
                           <CopyEmail email={lead.email} />
                         </div>
                       </div>
                     </div>
                   </td>
+                  {/* Company / Title */}
                   <td className="px-4 py-3">
                     <p className="font-medium text-zinc-800 leading-snug">{lead.company || "—"}</p>
-                    <p className="text-xs text-zinc-400 mt-0.5 max-w-[220px] truncate">{lead.title || ""}</p>
+                    <p className="text-xs text-zinc-400 mt-0.5 max-w-[220px] truncate">{lead.jobTitle || ""}</p>
                   </td>
-                  <td className="px-4 py-3 text-zinc-600 whitespace-nowrap">{lead.function || "—"}</td>
+                  {/* Function */}
+                  <td className="px-4 py-3 text-zinc-600 whitespace-nowrap">{lead.func || "—"}</td>
+                  {/* Seniority */}
                   <td className="px-4 py-3">
-                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${SENIORITY_STYLES[seniority] || SENIORITY_STYLES.UNVERIFIED}`}>
-                      {seniorityLabel}
+                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${SENIORITY_STYLES[lead.seniorityTier] || SENIORITY_STYLES.UNVERIFIED}`}>
+                      {seniorityLabel(lead.seniorityTier)}
                     </span>
                   </td>
+                  {/* Country */}
                   <td className="px-4 py-3 text-zinc-600 whitespace-nowrap">{country || lead.country || "—"}</td>
+                  {/* Score */}
                   <td className="px-4 py-3"><ScoreBar score={lead.score} /></td>
+                  {/* Open % */}
                   <td className="px-4 py-3 tabular-nums text-zinc-700">{openPct}</td>
+                  {/* Click % */}
                   <td className="px-4 py-3 tabular-nums text-zinc-700">{clickPct}</td>
-                  <td className="px-4 py-3 tabular-nums text-zinc-700">{lead.days ?? "—"}</td>
+                  {/* Days */}
+                  <td className="px-4 py-3 tabular-nums text-zinc-700">{lead.subscriptionDays ?? "—"}</td>
+                  {/* Tier */}
                   <td className="px-4 py-3">
                     <span className={`text-xs font-medium px-2.5 py-1 rounded-full capitalize ${TIER_STYLES[lead.tier] || TIER_STYLES.excluded}`}>
                       {lead.tier === "top" ? "Top" : lead.tier === "qualified" ? "Qualified" : lead.tier === "warm" ? "Warm" : lead.tier}
                     </span>
                   </td>
+                  {/* Recommended action */}
                   <td className="px-4 py-3 text-zinc-600 whitespace-nowrap">{action}</td>
                 </tr>
               );

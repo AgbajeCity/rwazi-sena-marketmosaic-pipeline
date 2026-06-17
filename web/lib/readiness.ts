@@ -1,15 +1,6 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// Sena Launch Readiness — the single source of truth.
-//
-// This module encodes the launch-gate framework (gates, milestones, numeric
-// bars, the readiness-review scorecard, the absolute-minimum criteria, the
-// execution roadmap and the launch-window rules) plus the pure functions that
-// turn a saved `ReadinessState` into progress, gate-completion and the GO/NO-GO
-// verdict. UI components render this; the API persists `ReadinessState`.
-//
-// Guiding principle (from the framework): the launch date is the reward for
-// completing the milestones, not the forcing function.
-// ─────────────────────────────────────────────────────────────────────────────
+// Market Mosaic → Sena outreach readiness.
+// Tracks everything needed to send the Sena commercial newsletter to
+// Market Mosaic subscribers and convert them into booked Sena demos.
 
 export type Comparator = "gte" | "lte";
 
@@ -17,8 +8,8 @@ export interface Metric {
   id: string;
   label: string;
   target: number;
-  comparator: Comparator; // gte = "at least", lte = "at most / under"
-  unit?: string; // "%", "min", …
+  comparator: Comparator;
+  unit?: string;
 }
 
 export interface MetricGroup {
@@ -43,7 +34,6 @@ export interface Gate {
   note?: string;
 }
 
-// ── Helpers to build gate content without hand-writing every id ──────────────
 function ms(gateId: string, labels: string[]): Milestone[] {
   return labels.map((label, i) => ({ id: `${gateId}/m${i + 1}`, label }));
 }
@@ -51,261 +41,143 @@ function m(id: string, label: string, target: number, comparator: Comparator = "
   return { id, label, target, comparator, unit };
 }
 
-// ── The six launch gates ─────────────────────────────────────────────────────
 export const GATES: Gate[] = [
   {
-    id: "product",
+    id: "newsletter",
     number: 1,
-    name: "Product Readiness",
-    owner: "Product",
-    tagline: "Reliable enough to put people in without hand-holding.",
-    description: "Core workflow end-to-end. No critical bugs. Beta complete.",
-    milestones: ms("product", [
-      "Core Sena workflow is fully usable end-to-end.",
-      "Users can upload CSV or Excel files without internal support.",
-      "Sena generates useful insights, recommendations, and simulations from uploaded data.",
-      "Output is clear enough for a business user to understand without product-team explanation.",
-      "Error states are clean and understandable.",
-      "Onboarding flow is complete.",
-      "Demo environment is stable.",
-      "Sales demo environment is separate from the live user environment.",
-      "Website signup or demo-request flow is live.",
-      "Analytics tracking is installed across product and website.",
-      "At least 50 full internal test runs have been completed.",
-      "At least 20 external beta users have completed a full workflow.",
-      "No unresolved critical bugs.",
-      "No unresolved launch-blocking UX issues.",
+    name: "Newsletter Draft",
+    owner: "Insights",
+    tagline: "Insight-led, not sales-led.",
+    description: "The Sena block reads like useful analysis, not an ad.",
+    milestones: ms("newsletter", [
+      "Newsletter draft is complete.",
+      "Sena commercial block is placed mid-newsletter.",
+      "Positioning is insight-led — data use cases, not a product pitch.",
+      "CTA is a soft nudge (e.g. 'see how your data compares'), not 'get access to Sena'.",
+      "Block length is concise — fits naturally without disrupting the read.",
+      "Copy has been reviewed for tone alignment with Market Mosaic's voice.",
+      "Internal sign-off received.",
     ]),
     metricGroups: [
       {
-        title: "Minimum product bar",
+        title: "Content bar",
         metrics: [
-          m("product/completion-rate", "Successful completion rate for the core workflow", 95, "gte", "%"),
-          m("product/time-to-output", "Median time to first useful output", 10, "lte", "min"),
-          m("product/support-rate", "Users requiring human support to finish the first workflow", 5, "lte", "%"),
+          m("newsletter/block-words", "Sena block word count", 300, "lte", " words"),
+          m("newsletter/cta-count", "Number of CTAs in the Sena block", 1, "lte"),
         ],
       },
     ],
   },
   {
-    id: "enterprise",
+    id: "booking",
     number: 2,
-    name: "Enterprise Customer Proof",
-    owner: "Sales",
-    tagline: "The main revenue motion — this gate matters most.",
-    description: "Real corporate customers getting real value, not demos.",
-    milestones: ms("enterprise", [
-      "At least 5 corporate customers actively using Sena.",
-      "At least 3 of those customers are recognizable or strategically valuable.",
-      "At least 2 customers are using Sena weekly.",
-      "At least 1 customer is using Sena across more than one stakeholder or team.",
-      "At least 3 customers have completed real business use cases, not demos.",
-      "At least 2 customers have generated outputs they would be willing to show internally.",
-      "At least 2 corporate customers have clear before/after value stories.",
-    ]),
-    metricGroups: [
-      {
-        title: "Minimum enterprise usage bar",
-        metrics: [
-          m("enterprise/active-customers", "Active corporate customers", 5),
-          m("enterprise/active-users", "Active enterprise users across those customers", 15),
-          m("enterprise/sessions", "Real Sena sessions completed by enterprise users", 25),
-          m("enterprise/decisions", "Concrete business decisions influenced by Sena", 10),
-          m("enterprise/expansions", "Expansion conversations triggered by Sena usage", 3),
-        ],
-      },
-    ],
-  },
-  {
-    id: "testimonials",
-    number: 3,
-    name: "Testimonials & Proof Assets",
-    owner: "Marketing",
-    tagline: "Named proof before public launch.",
-    description: "Named quotes, references, and at least one detailed case study.",
-    milestones: ms("testimonials", [
-      "3 named corporate testimonials approved for public use.",
-      "5 private customer quotes approved for sales decks, even if not public.",
-      "1 detailed case study.",
-      "3 short use-case stories.",
-      "1 enterprise customer willing to join a webinar, fireside chat, or launch quote.",
-      "1 investor/advisor quote (if useful).",
-      "1 strong internal customer-success memo summarizing actual usage and value.",
-    ]),
-    metricGroups: [
-      {
-        title: "Minimum testimonial bar",
-        metrics: [
-          m("testimonials/named-quotes", "Named quotes approved for public use", 3),
-          m("testimonials/case-studies", "Detailed case studies", 1),
-          m("testimonials/private-refs", "Private sales references", 5),
-          m("testimonials/logos", "Customer logos approved for launch page / deck", 1),
-        ],
-      },
-    ],
-    note: "If we cannot get named testimonials, that is a signal the product value is not yet strong enough.",
-  },
-  {
-    id: "selfserve",
-    number: 4,
-    name: "Self-Serve Usage Proof",
+    name: "Booking Flow",
     owner: "Growth",
-    tagline: "Proof Sena can spread beyond enterprise sales.",
-    description: "Activate and spread without hand-holding. Market Mosaic subscribers are the first pool.",
-    milestones: ms("selfserve", [
-      "Self-serve signup or request-access flow is live.",
-      "Onboarding emails are live.",
-      "Product analytics are live.",
-      "Payment or pricing flow is either live or clearly staged.",
-      "At least 250 non-enterprise users have signed up or requested access.",
-      "At least 100 have activated.",
-      "At least 50 have completed a full Sena workflow.",
-      "At least 25 have returned for a second session.",
-      "At least 10 users have invited, shared, or referred someone else.",
+    tagline: "One step. No friction.",
+    description: "Subscribers click → land on Calendly → book. No Google Form, no redirect.",
+    milestones: ms("booking", [
+      "Calendly event created for Sena demo calls.",
+      "Intake form fields embedded directly in Calendly (name, role, company, use case).",
+      "Two-step Google Form flow removed or bypassed.",
+      "Booking link tested end-to-end in a non-Google browser environment.",
+      "Confirmation email configured with next-step context.",
+      "Calendly link inserted into the newsletter CTA.",
     ]),
     metricGroups: [
       {
-        title: "Minimum self-serve usage bar",
+        title: "Form quality",
         metrics: [
-          m("selfserve/signups", "Signups or access requests", 250),
-          m("selfserve/activated", "Activated users", 100),
-          m("selfserve/completed", "Completed workflows", 50),
-          m("selfserve/returning", "Returning users", 25),
-          m("selfserve/activation-rate", "Activation rate", 30, "gte", "%"),
-          m("selfserve/retention", "Week-one retention among activated users", 20, "gte", "%"),
-        ],
-      },
-      {
-        title: "Minimum satisfaction bar",
-        metrics: [
-          m("selfserve/nps", "NPS from active users", 40),
-          m("selfserve/useful", "Surveyed users who say the output was useful", 70, "gte", "%"),
-          m("selfserve/would-reuse", "Users who would use Sena again for a real decision", 50, "gte", "%"),
-          m("selfserve/qual-responses", "Qualitative responses explaining the value", 20),
+          m("booking/form-fields", "Number of required form fields", 5, "lte"),
+          m("booking/steps", "Steps from click to confirmed booking", 1, "lte"),
         ],
       },
     ],
-    note: "NPS should not be the main launch gate, but we should still measure it.",
+    note: "Fewer fields = higher conversion. Keep it to what you actually need for the first call.",
   },
   {
-    id: "narrative",
-    number: 5,
-    name: "Market Narrative Readiness",
-    owner: "Marketing",
-    tagline: "One sentence. Everyone understands it.",
-    description: "Positioning, category, and story locked. Market Mosaic is the audience proof-point.",
-    milestones: ms("narrative", [
-      "One-line positioning finalized.",
-      "Category language finalized.",
-      "Website headline finalized.",
-      "Founder narrative finalized.",
-      "Sales narrative finalized.",
-      "Product demo narrative finalized.",
-      "Press narrative finalized.",
-      "FAQ finalized.",
-      "Objection handling finalized.",
-      "Competitor positioning finalized.",
-      "Pricing explanation finalized.",
-      "Launch announcement copy finalized.",
+    id: "subscribers",
+    number: 3,
+    name: "Subscriber Targeting",
+    owner: "Insights",
+    tagline: "Right subscribers. Right segment.",
+    description: "The pipeline has already scored and ranked our Market Mosaic subscribers — use it.",
+    milestones: ms("subscribers", [
+      "Target segment defined (e.g. Tier 1 + Tier 2 corporate subscribers).",
+      "Segment pulled from the Prospect Pipeline tab.",
+      "List size confirmed — enough volume for statistical signal.",
+      "Personalisation tokens verified (first name, company where available).",
+      "Unsubscribe / suppression list checked.",
+      "Send list uploaded or synced to beehiiv.",
     ]),
     metricGroups: [
       {
-        title: "Clarity test — give the launch page to 10 people who have never seen Sena",
+        title: "Audience size",
         metrics: [
-          m("narrative/clarity", "Of 10 cold readers, those who can answer all six questions below", 8),
+          m("subscribers/list-size", "Subscribers in the send list", 500),
+          m("subscribers/corporate", "Corporate-domain subscribers in the list", 100),
         ],
       },
     ],
-    note: "They must be able to answer: What is Sena? · Who is it for? · What problem does it solve? · Why now? · Why Rwazi? · What should I do next? — If they cannot answer clearly, we are not ready.",
   },
   {
-    id: "distribution",
-    number: 6,
-    name: "Distribution Readiness",
-    owner: "Marketing",
-    tagline: "An audience before the announcement.",
-    description: "Press, partners, sequences, and paid all primed. Market Mosaic list activated.",
-    milestones: ms("distribution", [
-      "Press release drafted and approved.",
-      "PR Newswire credits / package confirmed.",
-      "Media list finalized.",
-      "25 journalists identified.",
-      "10 warm media relationships activated.",
-      "5 journalist briefings completed before launch.",
-      "3 newsletter partnerships or placements lined up.",
-      "10 customer / prospect email segments prepared.",
-      "Founder LinkedIn launch sequence prepared.",
-      "Company LinkedIn sequence prepared.",
-      "Sales outreach sequence prepared.",
-      "Investor update prepared.",
-      "Partner outreach prepared.",
-      "Webinar or live demo scheduled.",
-      "Retargeting audiences created.",
-      "Paid LinkedIn campaign ready.",
-      "Website analytics and conversion tracking ready.",
+    id: "tracking",
+    number: 4,
+    name: "Conversion Tracking",
+    owner: "Insights",
+    tagline: "Every click and booking accounted for.",
+    description: "Track open rate, click rate, and meetings booked so we can report to leadership.",
+    milestones: ms("tracking", [
+      "beehiiv campaign analytics enabled.",
+      "UTM parameters added to all Calendly links in the newsletter.",
+      "Calendly analytics connected or manually tracked.",
+      "Shared reporting view set up (or spreadsheet agreed).",
+      "Metrics baseline established (previous campaign benchmarks).",
+      "Report template ready for leadership presentation.",
     ]),
     metricGroups: [
       {
-        title: "Minimum distribution bar",
+        title: "Target engagement",
         metrics: [
-          m("distribution/briefings", "Embargoed journalist briefings", 5),
-          m("distribution/placements", "Likely media / newsletter placements", 3),
-          m("distribution/webinar", "Launch webinar scheduled", 1),
-          m("distribution/customer-email", "Customer email campaign ready", 1),
-          m("distribution/prospect-email", "Prospect email campaign ready", 1),
-          m("distribution/sales-assets", "Sales-ready launch assets completed", 10),
+          m("tracking/open-rate", "Email open rate", 35, "gte", "%"),
+          m("tracking/click-rate", "Click-through rate on the Sena CTA", 3, "gte", "%"),
+          m("tracking/meetings", "Demo meetings booked from this send", 10),
+          m("tracking/responses", "Direct subscriber replies or enquiries", 5),
         ],
       },
     ],
   },
 ];
 
-// ── Readiness review scorecard (final gate, scored 0–10 each) ────────────────
+export const REVIEW_CATEGORIES: ReviewCategory[] = [
+  { id: "review/copy", label: "Newsletter copy quality", min: 8 },
+  { id: "review/positioning", label: "Sena positioning (insight-led)", min: 8 },
+  { id: "review/booking", label: "Booking flow (friction-free)", min: 9 },
+  { id: "review/segment", label: "Subscriber segment quality", min: 8 },
+  { id: "review/tracking", label: "Tracking & reporting setup", min: 8 },
+];
+
 export interface ReviewCategory {
   id: string;
   label: string;
   min: number;
 }
-export const REVIEW_CATEGORIES: ReviewCategory[] = [
-  { id: "review/product", label: "Product Readiness", min: 9 },
-  { id: "review/enterprise", label: "Enterprise Proof", min: 9 },
-  { id: "review/selfserve", label: "Self-Serve Proof", min: 8 },
-  { id: "review/testimonials", label: "Testimonials", min: 8 },
-  { id: "review/narrative", label: "Narrative", min: 8 },
-  { id: "review/distribution", label: "Distribution", min: 8 },
-  { id: "review/sales", label: "Sales Readiness", min: 8 },
-];
 
-// ── Absolute-minimum launch criteria (non-negotiable) ────────────────────────
-// Items with `metricId` are derived automatically from a gate metric; the rest
-// are manual confirmations the owners tick off.
 export interface Criterion {
   id: string;
   label: string;
   metricId?: string;
 }
 export const MIN_CRITERIA: Criterion[] = [
-  { id: "crit/active-customers", label: "5 active corporate customers using Sena", metricId: "enterprise/active-customers" },
-  { id: "crit/named-testimonials", label: "3 named corporate testimonials", metricId: "testimonials/named-quotes" },
-  { id: "crit/case-study", label: "1 public case study", metricId: "testimonials/case-studies" },
-  { id: "crit/signups", label: "250 self-serve signups or access requests", metricId: "selfserve/signups" },
-  { id: "crit/activated", label: "100 activated self-serve users", metricId: "selfserve/activated" },
-  { id: "crit/completed", label: "50 completed self-serve workflows", metricId: "selfserve/completed" },
-  { id: "crit/nps", label: "NPS 40+ from active users", metricId: "selfserve/nps" },
-  { id: "crit/completion-rate", label: "95%+ successful core-workflow completion", metricId: "product/completion-rate" },
-  { id: "crit/time-to-output", label: "Median time to first useful output under 10 minutes", metricId: "product/time-to-output" },
-  { id: "crit/briefings", label: "5 embargoed journalist briefings", metricId: "distribution/briefings" },
-  { id: "crit/placements", label: "3 likely media / newsletter placements", metricId: "distribution/placements" },
-  { id: "crit/assets-ready", label: "Final website, demo, sales deck, FAQ, and launch video ready" },
-  { id: "crit/sales-trained", label: "Sales team trained and ready" },
-  { id: "crit/cs-ready", label: "Customer success ready for inbound" },
-  { id: "crit/support-ready", label: "Product support ready for launch week" },
-  { id: "crit/launch-cta", label: "Clear launch CTA" },
-  { id: "crit/pricing-path", label: "Clear pricing or access path" },
-  { id: "crit/followup", label: "Clear follow-up campaign for 30 days after announcement" },
+  { id: "crit/draft", label: "Newsletter draft complete and signed off" },
+  { id: "crit/block", label: "Sena block is insight-led, not a pitch" },
+  { id: "crit/cta", label: "Single CTA linking to Calendly" },
+  { id: "crit/calendly", label: "One-step Calendly booking live and tested" },
+  { id: "crit/list", label: "Send list confirmed from Prospect Pipeline", metricId: "subscribers/list-size" },
+  { id: "crit/corporate", label: "100+ corporate subscribers in the list", metricId: "subscribers/corporate" },
+  { id: "crit/utm", label: "UTM tracking on Calendly link" },
+  { id: "crit/reporting", label: "Reporting template ready for Jay" },
 ];
 
-// ── Recommended order of execution ───────────────────────────────────────────
 export interface Step {
   id: string;
   number: number;
@@ -314,62 +186,42 @@ export interface Step {
   summary: string;
 }
 export const STEPS: Step[] = [
-  { id: "step/1", number: 1, title: "Define the launch thesis", owner: "Marketing · Product", summary: "Lock the exact launch claim — what changed, why it matters, who it's for, why Rwazi, why now." },
-  { id: "step/2", number: 2, title: "Lock the product use cases", owner: "Product · Sales", summary: "Pick 3–5 killer use cases. Each needs: input data, output, user, decision, example, sales story." },
-  { id: "step/3", number: 3, title: "Recruit beta customers", owner: "Sales", summary: "10 invited · 5 active minimum · 3 strong proof customers · 1 public case-study candidate." },
-  { id: "step/4", number: 4, title: "Run enterprise beta", owner: "Customer Success", summary: "Kickoff → data → workflow → output → decision → value → testimonial → expansion. One memo per account." },
-  { id: "step/5", number: 5, title: "Open self-serve access", owner: "Growth", summary: "Tap Market Mosaic subscribers first. Track: signup → activation → upload → output → return → referral." },
-  { id: "step/6", number: 6, title: "Collect proof", owner: "Marketing", summary: "3 named testimonials · 5 private quotes · 1 case study · 3 mini use cases · screenshots · metrics." },
-  { id: "step/7", number: 7, title: "Build launch assets", owner: "Marketing", summary: "Landing page · PR release · emails · sales deck · demo video · FAQ · case study · media kit." },
-  { id: "step/8", number: 8, title: "Test the narrative", owner: "Marketing", summary: "5 customers + 5 prospects + 5 cold readers. Launch only if the story lands immediately." },
-  { id: "step/9", number: 9, title: "Build the distribution machine", owner: "Marketing · Sales", summary: "PR · LinkedIn · emails · outbound · webinars · paid · retargeting · newsletters · briefings." },
-  { id: "step/10", number: 10, title: "Final launch readiness review", owner: "Leadership", summary: "Score every gate. If below bar, we do not launch." },
+  { id: "step/1", number: 1, title: "Pull the target segment", owner: "Insights", summary: "Use the Prospect Pipeline tab — filter Tier 1 + Tier 2 corporate subscribers. Export or sync the list." },
+  { id: "step/2", number: 2, title: "Set up Calendly one-step booking", owner: "Growth", summary: "Create the Sena demo event. Embed name, role, company, use-case fields directly. Remove the Google Form step. Test in a non-Google browser." },
+  { id: "step/3", number: 3, title: "Add UTM parameters", owner: "Insights", summary: "Tag the Calendly link with utm_source=market-mosaic&utm_campaign=sena-newsletter so every booking is traceable." },
+  { id: "step/4", number: 4, title: "Write the Sena block", owner: "Insights", summary: "Place mid-newsletter. Lead with a data use case that mirrors what our subscribers care about. End with a single soft CTA. Keep it under 300 words." },
+  { id: "step/5", number: 5, title: "Internal review", owner: "Insights", summary: "Share draft with Mercy. Check tone, CTA, and booking flow end-to-end before approving send." },
+  { id: "step/6", number: 6, title: "Send newsletter", owner: "Insights", summary: "Schedule for Tuesday–Thursday morning. Confirm beehiiv analytics are live before sending." },
+  { id: "step/7", number: 7, title: "Monitor in real time", owner: "Insights", summary: "Watch open rate and click rate in the first 4 hours. Flag any broken links immediately." },
+  { id: "step/8", number: 8, title: "Log meetings booked", owner: "Growth", summary: "Track every Calendly booking back to the newsletter send. Note company, role, and use case from the form." },
+  { id: "step/9", number: 9, title: "Build the conversion report", owner: "Insights", summary: "Outreach sent → opens → clicks → bookings → meetings held. Present to Jay with the pipeline data alongside." },
 ];
 
-// ── Ideal "global banger" criteria (stretch reference) ───────────────────────
 export const IDEAL_CRITERIA: string[] = [
-  "10 corporate customers using Sena",
-  "5 weekly active corporate accounts",
-  "3 recognizable enterprise customers willing to be referenced",
-  "5 named testimonials",
-  "2 full case studies",
-  "1 customer willing to speak publicly",
-  "1,000 self-serve signups or access requests",
-  "400 activated users",
-  "200 completed workflows",
-  "100 returning users",
-  "NPS 50+",
-  "10 journalist briefings",
-  "5 confirmed or highly likely media / newsletter placements",
-  "2 founder thought-leadership posts warmed up before launch",
-  "1 launch webinar with customers / prospects invited",
-  "1 partner / investor amplification plan",
-  "Paid LinkedIn and retargeting campaigns ready",
-  "30-day post-launch content calendar ready",
-  "Sales has a target-account list ready to hit immediately",
+  "Open rate 45%+",
+  "Click rate 5%+ on Sena CTA",
+  "20+ demo meetings booked",
+  "10+ meetings held within 2 weeks of send",
+  "3+ enterprise accounts in the booked list",
+  "1 subscriber converts to a Sena pilot",
+  "Shared reporting dashboard live before the next send",
+  "Second newsletter iteration planned based on this send's data",
 ];
 
-// ── Launch-window rules ──────────────────────────────────────────────────────
 export const DATE_RULES = {
   structural: [
-    "Land on a Tuesday, Wednesday, or Thursday (Tuesday preferred).",
-    "Not during August.",
-    "Not during the final two weeks of December.",
-    "Not during the first week of January.",
+    "Tuesday, Wednesday, or Thursday send.",
+    "Not during a public holiday week.",
+    "Not the same week as another major Rwazi announcement.",
   ],
   judgement: [
-    "Not during a major U.S. holiday week.",
-    "Not during a major competing industry event — unless we are intentionally using it.",
-    "At least 21 days after press briefings begin.",
-    "At least 14 days after final launch assets are approved.",
-    "At least 7 days after sales has all launch materials.",
+    "Newsletter draft approved at least 24 hours before send.",
+    "Calendly booking link tested same day as send.",
+    "Mercy and Ayomide aligned on timing before scheduling.",
   ],
-  preferred: "Preferred: Tuesday, 8:00 AM ET.",
+  preferred: "Preferred: Tuesday, 8:00 AM ET / 11:00 AM Lagos.",
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// State + pure computation
-// ─────────────────────────────────────────────────────────────────────────────
 export interface ReadinessState {
   milestones: Record<string, boolean>;
   metrics: Record<string, number>;
@@ -394,7 +246,6 @@ export function allMetrics(gate: Gate): Metric[] {
   return gate.metricGroups.flatMap((g) => g.metrics);
 }
 
-// Flat lookup of every metric by id, for criteria derivation and validation.
 export const METRIC_BY_ID: Record<string, Metric> = Object.fromEntries(
   GATES.flatMap((g) => allMetrics(g)).map((mt) => [mt.id, mt])
 );
@@ -404,7 +255,7 @@ export interface GateProgress {
   milestonesTotal: number;
   metricsMet: number;
   metricsTotal: number;
-  fraction: number; // 0..1 across milestones + metrics
+  fraction: number;
   complete: boolean;
 }
 
@@ -448,7 +299,6 @@ export function minCriteriaMetCount(state: ReadinessState): number {
   return MIN_CRITERIA.filter((c) => criterionMet(c, state)).length;
 }
 
-// Mean of the six gate fractions — the headline readiness percentage.
 export function overallReadiness(state: ReadinessState): number {
   const sum = GATES.reduce((acc, g) => acc + gateProgress(g, state).fraction, 0);
   return Math.round((sum / GATES.length) * 100);
@@ -474,17 +324,17 @@ export function launchVerdict(state: ReadinessState): Verdict {
     const p = gateProgress(g, state);
     if (!p.complete) {
       const parts: string[] = [];
-      if (p.milestonesDone < p.milestonesTotal) parts.push(`${p.milestonesTotal - p.milestonesDone} milestone(s)`);
+      if (p.milestonesDone < p.milestonesTotal) parts.push(`${p.milestonesTotal - p.milestonesDone} item(s)`);
       if (p.metricsMet < p.metricsTotal) parts.push(`${p.metricsTotal - p.metricsMet} metric(s)`);
       blockers.push(`${g.name}: ${parts.join(" + ")} outstanding`);
     }
   }
   if (!reviewPassed) {
     const weak = REVIEW_CATEGORIES.filter((c) => (state.scores[c.id] ?? 0) < c.min).map((c) => c.label);
-    blockers.push(`Readiness review below bar: ${weak.join(", ")}`);
+    blockers.push(`Review below bar: ${weak.join(", ")}`);
   }
   if (minMet < MIN_CRITERIA.length) {
-    blockers.push(`${MIN_CRITERIA.length - minMet} absolute-minimum criteria unmet`);
+    blockers.push(`${MIN_CRITERIA.length - minMet} minimum criteria unmet`);
   }
 
   return {
@@ -498,7 +348,6 @@ export function launchVerdict(state: ReadinessState): Verdict {
   };
 }
 
-// ── Launch-date validation (structural rules only — the rest need judgement) ──
 export interface DateCheck {
   rule: string;
   ok: boolean;
@@ -507,19 +356,15 @@ export function validateLaunchDate(iso: string | null): { checks: DateCheck[]; o
   if (!iso) return null;
   const d = new Date(iso + "T12:00:00Z");
   if (Number.isNaN(d.getTime())) return null;
-  const day = d.getUTCDay(); // 0 Sun … 6 Sat
-  const month = d.getUTCMonth(); // 0 Jan … 11 Dec
-  const date = d.getUTCDate();
-
+  const day = d.getUTCDay();
+  const month = d.getUTCMonth();
   const checks: DateCheck[] = [
     { rule: "Tuesday, Wednesday, or Thursday", ok: day >= 2 && day <= 4 },
     { rule: "Not during August", ok: month !== 7 },
-    { rule: "Not the final two weeks of December", ok: !(month === 11 && date >= 18) },
-    { rule: "Not the first week of January", ok: !(month === 0 && date <= 7) },
   ];
   return { checks, ok: checks.every((c) => c.ok) };
 }
 
 export function comparatorSymbol(c: Comparator): string {
-  return c === "gte" ? "≥" : "≤";
+  return c === "gte" ? ">=" : "<=";
 }

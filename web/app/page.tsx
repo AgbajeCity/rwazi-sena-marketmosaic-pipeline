@@ -239,7 +239,7 @@ export default function DashboardPage() {
                 onClick={() => setTab("readiness")}
                 className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${tab === "readiness" ? "bg-[#F15A29] text-white" : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900"}`}
               >
-                Sena Launch Readiness
+                Sena Newsletter Readiness
               </button>
             </nav>
           </div>
@@ -269,7 +269,7 @@ export default function DashboardPage() {
             onClick={() => setTab("readiness")}
             className={`flex-1 py-2 text-xs font-semibold transition-colors ${tab === "readiness" ? "bg-[#F15A29] text-white" : "text-zinc-500"}`}
           >
-            Launch Readiness
+            Send Readiness
           </button>
         </div>
       </div>
@@ -353,7 +353,7 @@ export default function DashboardPage() {
               <LaunchVerdict state={readiness} />
 
               <section>
-                <SectionHeading eyebrow="Earn the right to launch" title="Launch gates" />
+                <SectionHeading eyebrow="Before we hit send" title="Send readiness" />
                 <div className="space-y-3">
                   {GATES.map((gate) => (
                     <GateCard

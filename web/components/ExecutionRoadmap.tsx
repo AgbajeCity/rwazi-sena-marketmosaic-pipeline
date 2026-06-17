@@ -12,7 +12,7 @@ export function ExecutionRoadmap({ state, onToggleStep }: Props) {
   const done = STEPS.filter((s) => state.steps[s.id]).length;
   return (
     <section>
-      <SectionHeading eyebrow="How we earn the date" title="Execution order">
+      <SectionHeading eyebrow="Before we send" title="Execution order">
         <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-600">{done}/{STEPS.length} done</span>
       </SectionHeading>
 

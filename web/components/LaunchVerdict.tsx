@@ -23,12 +23,12 @@ export function LaunchVerdict({ state }: { state: ReadinessState }) {
 
         {/* Verdict + stats */}
         <div className="min-w-0 flex-1 text-center lg:text-left">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#f5956b]">Sena · Market Mosaic</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#f5956b]">Market Mosaic → Sena</p>
           <h1 className="text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl">
             {v.ready ? (
-              <>Cleared to <span className="text-emerald-400">pick a launch date.</span></>
+              <>Ready to <span className="text-emerald-400">send to subscribers.</span></>
             ) : (
-              <>Not ready to launch <span className="text-[#F15A29]">— yet.</span></>
+              <>Not ready to send <span className="text-[#F15A29]">— yet.</span></>
             )}
           </h1>
 

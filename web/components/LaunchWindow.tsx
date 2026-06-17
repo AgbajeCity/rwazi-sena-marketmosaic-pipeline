@@ -14,7 +14,7 @@ export function LaunchWindow({ state, onSetTargetDate }: Props) {
 
   return (
     <section>
-      <SectionHeading eyebrow="Only after the gates" title="Launch window">
+      <SectionHeading eyebrow="Send date" title="Newsletter send window">
         {!ready && (
           <span className="rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-medium text-amber-700 ring-1 ring-amber-300/50">Planning only</span>
         )}
@@ -23,7 +23,7 @@ export function LaunchWindow({ state, onSetTargetDate }: Props) {
         <div className="grid gap-6 lg:grid-cols-[auto_1fr]">
           {/* Candidate date + structural validation */}
           <div className="lg:w-64">
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-zinc-400">Target date</label>
+            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-zinc-400">Send date</label>
             <input
               type="date"
               value={state.targetDate ?? ""}

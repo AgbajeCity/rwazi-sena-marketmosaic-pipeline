@@ -11,9 +11,9 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sena Prospect Pipeline — Rwazi Insights (Internal)",
+  title: "Sena Launch Readiness — Rwazi",
   description:
-    "Internal Insights-team tool · Surfaces pre-qualified executives from Market Mosaic subscribers for Sena · Rwazi",
+    "Internal launch-readiness command center for Sena · Track the launch gates, milestones, and proof needed before we pick a launch date · Rwazi",
 };
 
 export default function RootLayout({

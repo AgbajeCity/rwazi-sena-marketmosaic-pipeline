@@ -14,7 +14,7 @@ export function IdealCriteria({ state, onToggleIdeal }: Props) {
   const done = IDEAL_CRITERIA.filter((_, i) => state.ideal[`ideal/${i}`]).length;
   return (
     <section>
-      <SectionHeading eyebrow="If we want a global banger" title="Ideal launch criteria">
+      <SectionHeading eyebrow="Stretch" title="Ideal launch criteria">
         <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-600">{done}/{IDEAL_CRITERIA.length}</span>
       </SectionHeading>
       <div className="mm-card rounded-2xl p-3 sm:p-4">

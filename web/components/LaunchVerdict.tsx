@@ -23,7 +23,7 @@ export function LaunchVerdict({ state }: { state: ReadinessState }) {
 
         {/* Verdict + stats */}
         <div className="min-w-0 flex-1 text-center lg:text-left">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#f5956b]">Sena Launch Readiness</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#f5956b]">Sena · Market Mosaic</p>
           <h1 className="text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl">
             {v.ready ? (
               <>Cleared to <span className="text-emerald-400">pick a launch date.</span></>
@@ -31,15 +31,11 @@ export function LaunchVerdict({ state }: { state: ReadinessState }) {
               <>Not ready to launch <span className="text-[#F15A29]">— yet.</span></>
             )}
           </h1>
-          <p className="mx-auto mt-2 max-w-2xl text-sm leading-relaxed text-zinc-300 lg:mx-0">
-            We pick the date only when every launch gate is complete. The launch date is the reward for completing the
-            milestones, not the forcing function.
-          </p>
 
           <div className="mt-5 grid grid-cols-3 gap-3 sm:max-w-lg lg:max-w-xl">
-            <Stat label="Gates complete" value={`${v.gatesDone}/${v.gatesTotal}`} good={v.gatesDone === v.gatesTotal} />
-            <Stat label="Readiness review" value={v.reviewPassed ? "Pass" : "Below bar"} good={v.reviewPassed} />
-            <Stat label="Minimum criteria" value={`${v.minCriteriaMet}/${v.minCriteriaTotal}`} good={v.minCriteriaMet === v.minCriteriaTotal} />
+            <Stat label="Gates" value={`${v.gatesDone}/${v.gatesTotal}`} good={v.gatesDone === v.gatesTotal} />
+            <Stat label="Review" value={v.reviewPassed ? "Pass" : "Below bar"} good={v.reviewPassed} />
+            <Stat label="Criteria" value={`${v.minCriteriaMet}/${v.minCriteriaTotal}`} good={v.minCriteriaMet === v.minCriteriaTotal} />
           </div>
         </div>
       </div>
@@ -47,11 +43,11 @@ export function LaunchVerdict({ state }: { state: ReadinessState }) {
       {/* Blockers */}
       {!v.ready && v.blockers.length > 0 && (
         <div className="mt-6 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">What&rsquo;s standing between us and a date</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">Blockers</p>
           <ul className="grid gap-x-6 gap-y-1.5 sm:grid-cols-2">
             {v.blockers.map((b, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-zinc-300">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F15A29]" />
+              <li key={i} className="flex items-start gap-2 text-xs text-zinc-300">
+                <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F15A29]" />
                 {b}
               </li>
             ))}

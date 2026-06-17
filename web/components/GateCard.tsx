@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Gate, Metric, ReadinessState, gateProgress, metricMet, comparatorSymbol } from "@/lib/readiness";
-import { ProgressRing, CheckRow, OwnerChip } from "@/components/ui";
+import { ProgressRing, CheckRow } from "@/components/ui";
 
 interface Props {
   gate: Gate;
@@ -44,10 +44,10 @@ export function GateCard({ gate, state, onToggleMilestone, onSetMetric }: Props)
           <p className="truncate text-xs text-zinc-500">{gate.tagline}</p>
         </div>
 
-        <div className="hidden shrink-0 flex-col items-end gap-1.5 sm:flex">
-          <OwnerChip name={gate.owner} />
+        <div className="hidden shrink-0 flex-col items-end gap-1 sm:flex">
+          <span className="rounded-full bg-zinc-100 px-2.5 py-0.5 text-[11px] font-medium text-zinc-500">{gate.owner}</span>
           <span className="text-[11px] tabular-nums text-zinc-400">
-            {p.milestonesDone}/{p.milestonesTotal} milestones · {p.metricsMet}/{p.metricsTotal} metrics
+            {p.milestonesDone}/{p.milestonesTotal} · {p.metricsMet}/{p.metricsTotal} metrics
           </span>
         </div>
 
@@ -58,8 +58,6 @@ export function GateCard({ gate, state, onToggleMilestone, onSetMetric }: Props)
 
       {open && (
         <div className="border-t border-zinc-100 px-5 py-4">
-          <p className="mb-4 text-sm leading-relaxed text-zinc-600">{gate.description}</p>
-
           <div className="grid gap-6 lg:grid-cols-2">
             {/* Milestones */}
             <div>
@@ -94,8 +92,8 @@ export function GateCard({ gate, state, onToggleMilestone, onSetMetric }: Props)
           </div>
 
           {gate.note && (
-            <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-relaxed text-amber-800">
-              {gate.note}
+            <p className="mt-4 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+              <span className="mt-0.5 shrink-0">⚠</span> {gate.note}
             </p>
           )}
         </div>

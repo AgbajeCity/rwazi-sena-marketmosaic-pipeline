@@ -14,7 +14,7 @@ export function ReadinessReview({ state, onSetScore }: Props) {
   const passed = reviewPass(state);
   return (
     <section>
-      <SectionHeading eyebrow="Step 10 · The final gate" title="Launch readiness review">
+      <SectionHeading eyebrow="Final gate" title="Readiness review">
         <span
           className={`rounded-full px-3 py-1 text-xs font-semibold ${
             passed ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500/30" : "bg-amber-50 text-amber-700 ring-1 ring-amber-500/30"
@@ -60,9 +60,8 @@ export function ReadinessReview({ state, onSetScore }: Props) {
             );
           })}
         </div>
-        <p className="mt-5 border-t border-zinc-100 pt-3 text-xs text-zinc-500">
-          Minimum launch score: no category below 8/10 · Enterprise Proof and Product Readiness must be 9/10 · Distribution 8/10+.
-          If we are below that, we do not launch.
+        <p className="mt-4 border-t border-zinc-100 pt-3 text-[11px] text-zinc-400">
+          Min: 8/10 across all · Product &amp; Enterprise must be 9/10
         </p>
       </div>
     </section>

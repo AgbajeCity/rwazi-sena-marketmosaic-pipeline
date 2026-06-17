@@ -8,26 +8,22 @@ interface Props {
   onSetTargetDate: (iso: string | null) => void;
 }
 
-// Reference panel + a structural validator. The date is only meaningful once all
-// gates are complete — until then this stays a planning aid, not a commitment.
 export function LaunchWindow({ state, onSetTargetDate }: Props) {
   const ready = gatesComplete(state);
   const result = validateLaunchDate(state.targetDate);
 
   return (
     <section>
-      <SectionHeading eyebrow="Only after the gates" title="Launch-window rules" />
-      <div className="mm-card rounded-2xl p-5">
+      <SectionHeading eyebrow="Only after the gates" title="Launch window">
         {!ready && (
-          <p className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-relaxed text-amber-800">
-            Gates are not all complete yet. Treat any date below as a planning aid — we only commit a date once every gate is green.
-          </p>
+          <span className="rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-medium text-amber-700 ring-1 ring-amber-300/50">Planning only</span>
         )}
-
+      </SectionHeading>
+      <div className="mm-card rounded-2xl p-5">
         <div className="grid gap-6 lg:grid-cols-[auto_1fr]">
           {/* Candidate date + structural validation */}
           <div className="lg:w-64">
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-zinc-400">Candidate date</label>
+            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-zinc-400">Target date</label>
             <input
               type="date"
               value={state.targetDate ?? ""}
@@ -38,7 +34,7 @@ export function LaunchWindow({ state, onSetTargetDate }: Props) {
               <ul className="mt-3 space-y-1.5">
                 {result.checks.map((c) => (
                   <li key={c.rule} className="flex items-start gap-2 text-xs">
-                    <span className={`mt-0.5 ${c.ok ? "text-emerald-500" : "text-red-500"}`}>
+                    <span className={`mt-0.5 font-bold ${c.ok ? "text-emerald-500" : "text-red-500"}`}>
                       {c.ok ? "✓" : "✗"}
                     </span>
                     <span className={c.ok ? "text-zinc-600" : "text-red-600"}>{c.rule}</span>
@@ -46,16 +42,16 @@ export function LaunchWindow({ state, onSetTargetDate }: Props) {
                 ))}
               </ul>
             )}
-            <p className="mt-3 text-xs font-medium text-zinc-500">{DATE_RULES.preferred}</p>
+            <p className="mt-3 text-[11px] text-zinc-400">{DATE_RULES.preferred}</p>
           </div>
 
-          {/* Judgement rules (not auto-checkable) */}
+          {/* Judgement rules */}
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">Also confirm by judgement</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">Confirm by judgement</p>
             <ul className="grid gap-x-6 gap-y-1.5 sm:grid-cols-2">
               {DATE_RULES.judgement.map((r) => (
-                <li key={r} className="flex items-start gap-2 text-sm text-zinc-600">
-                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-300" />
+                <li key={r} className="flex items-start gap-2 text-xs text-zinc-600">
+                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-300" />
                   {r}
                 </li>
               ))}

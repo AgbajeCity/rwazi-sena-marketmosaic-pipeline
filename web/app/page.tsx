@@ -353,9 +353,7 @@ export default function DashboardPage() {
               <LaunchVerdict state={readiness} />
 
               <section>
-                <SectionHeading eyebrow="Earn the right to launch" title="The launch gates">
-                  <span className="text-xs text-zinc-400">If any gate is weak, we delay the launch.</span>
-                </SectionHeading>
+                <SectionHeading eyebrow="Earn the right to launch" title="Launch gates" />
                 <div className="space-y-3">
                   {GATES.map((gate) => (
                     <GateCard

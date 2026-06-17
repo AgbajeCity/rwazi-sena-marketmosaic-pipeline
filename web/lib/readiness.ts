@@ -57,10 +57,9 @@ export const GATES: Gate[] = [
     id: "product",
     number: 1,
     name: "Product Readiness",
-    owner: "Ashton Slatev",
+    owner: "Product",
     tagline: "Reliable enough to put people in without hand-holding.",
-    description:
-      "Sena must be reliable enough that sales, marketing, and customer success can confidently put people into the product without hand-holding.",
+    description: "Core workflow end-to-end. No critical bugs. Beta complete.",
     milestones: ms("product", [
       "Core Sena workflow is fully usable end-to-end.",
       "Users can upload CSV or Excel files without internal support.",
@@ -92,10 +91,9 @@ export const GATES: Gate[] = [
     id: "enterprise",
     number: 2,
     name: "Enterprise Customer Proof",
-    owner: "Mercy Gitau",
+    owner: "Sales",
     tagline: "The main revenue motion — this gate matters most.",
-    description:
-      "Since enterprise is the main revenue motion, this gate matters most. We need real corporate customers getting real value, not demos.",
+    description: "Real corporate customers getting real value, not demos.",
     milestones: ms("enterprise", [
       "At least 5 corporate customers actively using Sena.",
       "At least 3 of those customers are recognizable or strategically valuable.",
@@ -122,9 +120,9 @@ export const GATES: Gate[] = [
     id: "testimonials",
     number: 3,
     name: "Testimonials & Proof Assets",
-    owner: "Mercy Gitau",
+    owner: "Marketing",
     tagline: "Named proof before public launch.",
-    description: "We need named proof before public launch — quotes, references, and at least one detailed case study.",
+    description: "Named quotes, references, and at least one detailed case study.",
     milestones: ms("testimonials", [
       "3 named corporate testimonials approved for public use.",
       "5 private customer quotes approved for sales decks, even if not public.",
@@ -151,10 +149,9 @@ export const GATES: Gate[] = [
     id: "selfserve",
     number: 4,
     name: "Self-Serve Usage Proof",
-    owner: "Kapil Mathrani",
+    owner: "Growth",
     tagline: "Proof Sena can spread beyond enterprise sales.",
-    description:
-      "Self-serve does not need to drive primary revenue, but it should prove that Sena can activate and spread without enterprise hand-holding.",
+    description: "Activate and spread without hand-holding. Market Mosaic subscribers are the first pool.",
     milestones: ms("selfserve", [
       "Self-serve signup or request-access flow is live.",
       "Onboarding emails are live.",
@@ -194,9 +191,9 @@ export const GATES: Gate[] = [
     id: "narrative",
     number: 5,
     name: "Market Narrative Readiness",
-    owner: "Diksha Sharma",
-    tagline: "The market understands what Sena is in one sentence.",
-    description: "The market must understand what Sena is in one sentence — positioning, category, and story all locked.",
+    owner: "Marketing",
+    tagline: "One sentence. Everyone understands it.",
+    description: "Positioning, category, and story locked. Market Mosaic is the audience proof-point.",
     milestones: ms("narrative", [
       "One-line positioning finalized.",
       "Category language finalized.",
@@ -225,9 +222,9 @@ export const GATES: Gate[] = [
     id: "distribution",
     number: 6,
     name: "Distribution Readiness",
-    owner: "Marketing & Sales",
-    tagline: "The launch has an audience before the announcement.",
-    description: "The launch must have an audience before the announcement — press, partners, sequences, and paid all primed.",
+    owner: "Marketing",
+    tagline: "An audience before the announcement.",
+    description: "Press, partners, sequences, and paid all primed. Market Mosaic list activated.",
     milestones: ms("distribution", [
       "Press release drafted and approved.",
       "PR Newswire credits / package confirmed.",
@@ -317,19 +314,19 @@ export interface Step {
   summary: string;
 }
 export const STEPS: Step[] = [
-  { id: "step/1", number: 1, title: "Define the launch thesis", owner: "Marketing · Product · CEO", summary: "Lock the exact launch claim — what changed, why it matters, who it's for, why Rwazi, why now. Not “we built an AI tool.”" },
-  { id: "step/2", number: 2, title: "Lock the product use cases", owner: "Product · Sales · CS", summary: "Pick 3–5 killer use cases (e.g. market-share growth, marketing ROI, CLV, demand-signal analysis, scenario simulation). Each needs input data, output, user, decision, example, and a sales story." },
-  { id: "step/3", number: 3, title: "Recruit beta customers", owner: "Sales · CS", summary: "Select a controlled group — 10 invited, 5 active minimum, 3 strong proof customers, 1 public case-study candidate. Criteria: recognizable, real problem, active use, quote + expansion potential." },
-  { id: "step/4", number: 4, title: "Run enterprise beta", owner: "Customer Success", summary: "The most important phase. Each account: kickoff → data connect → first workflow → output review → decision discussion → value capture → testimonial → expansion. Every account produces a short internal memo." },
-  { id: "step/5", number: 5, title: "Open controlled self-serve access", owner: "Growth · Product Marketing", summary: "Start controlled with analysts, operators, founders, consultants, growth/strategy/finance/marketing teams. Prove activation without hand-holding. Track signup → activation → upload → output → return → referral → support → NPS." },
-  { id: "step/6", number: 6, title: "Collect proof", owner: "Marketing · CS", summary: "Gather before final launch copy: 3 named testimonials, 5 private quotes, 1 public case study, 3 mini use cases, screenshots, demo videos, usage metrics, analyst/user quotes." },
-  { id: "step/7", number: 7, title: "Build launch assets", owner: "Marketing", summary: "Landing page, PR Newswire release, founder + company LinkedIn posts, customer + prospect emails, investor update, sales deck, demo + teaser + 3-min launch video, FAQ, objection sheet, case study, media kit, talking points, webinar deck, follow-up sequence." },
-  { id: "step/8", number: 8, title: "Test the narrative", owner: "Product Marketing", summary: "Before announcing, test the story with 5 customers, 5 prospects, 5 advisors/investors, 5 non-technical business users. Launch only if the narrative is immediately understood." },
-  { id: "step/9", number: 9, title: "Build the distribution machine", owner: "Marketing · Sales", summary: "Turn the launch into a campaign, not a post: PR, founder + company LinkedIn, customer/prospect/investor/partner emails, sales outbound, webinars, paid LinkedIn, retargeting, newsletters, briefings, YouTube demo, blog. Don't rely on PR alone." },
-  { id: "step/10", number: 10, title: "Final launch readiness review", owner: "Leadership", summary: "No date is selected before this review. Score every gate; if below the bar, we do not launch." },
+  { id: "step/1", number: 1, title: "Define the launch thesis", owner: "Marketing · Product", summary: "Lock the exact launch claim — what changed, why it matters, who it's for, why Rwazi, why now." },
+  { id: "step/2", number: 2, title: "Lock the product use cases", owner: "Product · Sales", summary: "Pick 3–5 killer use cases. Each needs: input data, output, user, decision, example, sales story." },
+  { id: "step/3", number: 3, title: "Recruit beta customers", owner: "Sales", summary: "10 invited · 5 active minimum · 3 strong proof customers · 1 public case-study candidate." },
+  { id: "step/4", number: 4, title: "Run enterprise beta", owner: "Customer Success", summary: "Kickoff → data → workflow → output → decision → value → testimonial → expansion. One memo per account." },
+  { id: "step/5", number: 5, title: "Open self-serve access", owner: "Growth", summary: "Tap Market Mosaic subscribers first. Track: signup → activation → upload → output → return → referral." },
+  { id: "step/6", number: 6, title: "Collect proof", owner: "Marketing", summary: "3 named testimonials · 5 private quotes · 1 case study · 3 mini use cases · screenshots · metrics." },
+  { id: "step/7", number: 7, title: "Build launch assets", owner: "Marketing", summary: "Landing page · PR release · emails · sales deck · demo video · FAQ · case study · media kit." },
+  { id: "step/8", number: 8, title: "Test the narrative", owner: "Marketing", summary: "5 customers + 5 prospects + 5 cold readers. Launch only if the story lands immediately." },
+  { id: "step/9", number: 9, title: "Build the distribution machine", owner: "Marketing · Sales", summary: "PR · LinkedIn · emails · outbound · webinars · paid · retargeting · newsletters · briefings." },
+  { id: "step/10", number: 10, title: "Final launch readiness review", owner: "Leadership", summary: "Score every gate. If below bar, we do not launch." },
 ];
 
-// ── Ideal “global banger” criteria (stretch reference) ───────────────────────
+// ── Ideal "global banger" criteria (stretch reference) ───────────────────────
 export const IDEAL_CRITERIA: string[] = [
   "10 corporate customers using Sena",
   "5 weekly active corporate accounts",

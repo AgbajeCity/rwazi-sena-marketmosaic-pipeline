@@ -17,7 +17,7 @@ export function MinimumCriteria({ state, onToggleCriterion }: Props) {
 
   return (
     <section>
-      <SectionHeading eyebrow="Non-negotiable" title="Absolute minimum launch criteria">
+      <SectionHeading eyebrow="Non-negotiable" title="Minimum criteria">
         <span
           className={`rounded-full px-3 py-1 text-xs font-semibold ${
             allMet ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500/30" : "bg-zinc-100 text-zinc-600"

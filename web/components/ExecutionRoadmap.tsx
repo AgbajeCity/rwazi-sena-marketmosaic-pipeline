@@ -1,19 +1,18 @@
 "use client";
 
 import { ReadinessState, STEPS } from "@/lib/readiness";
-import { OwnerChip, SectionHeading } from "@/components/ui";
+import { SectionHeading } from "@/components/ui";
 
 interface Props {
   state: ReadinessState;
   onToggleStep: (id: string) => void;
 }
 
-// The recommended order of execution, as a checkable timeline.
 export function ExecutionRoadmap({ state, onToggleStep }: Props) {
   const done = STEPS.filter((s) => state.steps[s.id]).length;
   return (
     <section>
-      <SectionHeading eyebrow="How we earn the date" title="Recommended order of execution">
+      <SectionHeading eyebrow="How we earn the date" title="Execution order">
         <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-600">{done}/{STEPS.length} done</span>
       </SectionHeading>
 
@@ -45,9 +44,9 @@ export function ExecutionRoadmap({ state, onToggleStep }: Props) {
                       <span className={`text-sm font-semibold ${checked ? "text-zinc-400 line-through decoration-zinc-300" : "text-zinc-900"}`}>
                         {step.title}
                       </span>
-                      <OwnerChip name={step.owner} />
+                      <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-500">{step.owner}</span>
                     </div>
-                    <p className="mt-0.5 text-xs leading-relaxed text-zinc-500">{step.summary}</p>
+                    <p className="mt-0.5 text-xs text-zinc-500">{step.summary}</p>
                   </div>
                 </button>
               </li>

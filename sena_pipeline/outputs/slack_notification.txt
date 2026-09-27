@@ -1,0 +1,4 @@
+Sena pipeline refreshed — 2026-06-07
+71 qualified leads surfaced from 200 Market Mosaic subscribers
+Top tier (score ≥70): 0 | Qualified (50-69): 6 | Warm (30-49): 65
+File: sena_qualified_leads_2026-06-07.csv

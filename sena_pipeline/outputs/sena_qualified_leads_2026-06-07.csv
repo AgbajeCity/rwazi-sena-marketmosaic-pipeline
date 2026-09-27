@@ -1,0 +1,72 @@
+subscriber_id,email,email_domain,company,job_title,seniority_tier,engagement_score,open_rate_pct,click_rate_pct,last_engaged_date,subscription_created_date,subscription_days,lead_tier,recommended_action,run_date
+sub_4d874fb0-858c-4596-9e5a-aa918f9a344a,david.koontz@assurant.com,assurant.com,,,PROBABLE_SENIORITY,68.47,77.42,50.0,2025-09-02T18:28:47Z,2025-09-02T12:42:57Z,278,qualified,Nurture sequence,2026-06-07
+sub_7978c558-8405-4e9f-8418-2e0466c591c7,orlando.bain@rcis.com,rcis.com,,,PROBABLE_SENIORITY,61.82,4.55,100.0,2025-09-02T17:07:10Z,2025-09-02T12:42:56Z,278,qualified,Nurture sequence,2026-06-07
+sub_9f6d0758-ddb4-4edb-9917-3caecc0448b2,charu.gupta@pnbmetlife.com,pnbmetlife.com,,,PROBABLE_SENIORITY,60.91,2.27,100.0,2025-09-02T17:07:28Z,2025-09-02T12:43:09Z,278,qualified,Nurture sequence,2026-06-07
+sub_e4107222-edc2-4c6f-bdec-3f0cbc529b35,ntomar@pnbmetlife.com,pnbmetlife.com,,,PROBABLE_SENIORITY,60.91,2.27,100.0,2025-09-02T17:07:11Z,2025-09-02T12:42:57Z,278,qualified,Nurture sequence,2026-06-07
+sub_39a1e9fe-5c4d-46b0-9aad-1997d33c33a3,kevin.cummings@rbc.com,rbc.com,,,PROBABLE_SENIORITY,60.87,2.17,100.0,2025-09-02T17:07:13Z,2025-09-02T12:42:58Z,278,qualified,Nurture sequence,2026-06-07
+sub_8328a03c-8174-4ef5-8c7f-6967aacf954f,j.price@nationwide.com,nationwide.com,,,PROBABLE_SENIORITY,50.73,86.36,2.63,2025-09-02T18:28:46Z,2025-09-02T12:42:57Z,278,qualified,Nurture sequence,2026-06-07
+sub_4403cb16-777e-439a-a747-dc271f51530a,kellie.meharg@aleragroup.com,aleragroup.com,,,PROBABLE_SENIORITY,49.72,56.52,26.92,2025-09-02T18:29:02Z,2025-09-02T12:43:10Z,278,warm,Monitor,2026-06-07
+sub_8c701764-5367-4b23-98b8-4db145b86c6f,juliana.smith@epicbrokers.com,epicbrokers.com,,,PROBABLE_SENIORITY,49.54,86.36,0.0,2025-09-02T19:23:12Z,2025-09-02T12:42:58Z,278,warm,Monitor,2026-06-07
+sub_385c72a4-e6a5-4c33-be50-58d9e1555213,paty.lindsay@epicbrokers.com,epicbrokers.com,,,PROBABLE_SENIORITY,47.73,81.82,0.0,2025-09-02T17:07:32Z,2025-09-02T12:43:11Z,278,warm,Monitor,2026-06-07
+sub_dfd8f20f-1b63-4360-a6c9-5be9557c8b21,jcochrane@hilbgroup.com,hilbgroup.com,,,PROBABLE_SENIORITY,47.73,81.82,0.0,2025-09-02T17:07:34Z,2025-09-02T12:43:11Z,278,warm,Monitor,2026-06-07
+sub_600e4f65-9d5e-4b54-9100-cbbed9145f18,jflanigan@cottinghambutler.com,cottinghambutler.com,,,PROBABLE_SENIORITY,46.82,79.55,0.0,2025-09-02T17:07:32Z,2025-09-02T12:43:11Z,278,warm,Monitor,2026-06-07
+sub_706c4fc6-c4ac-4192-aebc-99db1fab5b8f,amy.measner@aleragroup.com,aleragroup.com,,,PROBABLE_SENIORITY,46.74,50.0,26.09,2025-09-02T17:07:32Z,2025-09-02T12:43:11Z,278,warm,Monitor,2026-06-07
+sub_986ec4ac-7059-4010-878b-d1c997ad1c00,christine.rosencrans@epicbrokers.com,epicbrokers.com,,,PROBABLE_SENIORITY,45.91,77.27,0.0,2025-09-02T17:07:32Z,2025-09-02T12:43:11Z,278,warm,Monitor,2026-06-07
+sub_cce09cae-92eb-41c2-8269-50dbbc7ee5b7,dgill@nationwide.com,nationwide.com,,,PROBABLE_SENIORITY,44.63,70.45,3.23,2025-09-02T18:28:47Z,2025-09-02T12:42:57Z,278,warm,Monitor,2026-06-07
+sub_6fb5b542-dfba-44ee-a964-0a85c6afc871,dormanb@nationwide.com,nationwide.com,,,PROBABLE_SENIORITY,44.63,70.45,3.23,2025-09-02T17:07:11Z,2025-09-02T12:42:57Z,278,warm,Monitor,2026-06-07
+sub_03b2e2cf-9891-4052-bbdf-72ae17da4164,kurt.strickler@usi.com,usi.com,,,PROBABLE_SENIORITY,44.09,72.73,0.0,2025-09-02T17:07:28Z,2025-09-02T12:43:09Z,278,warm,Monitor,2026-06-07
+sub_0877946a-203c-40fb-add9-418b96215f57,swestfall@hilbgroup.com,hilbgroup.com,,,PROBABLE_SENIORITY,44.09,72.73,0.0,2025-09-02T18:35:24Z,2025-09-02T12:42:56Z,278,warm,Monitor,2026-06-07
+sub_b7a2459f-1751-428e-bb74-43b378ac9d75,david.jacobsen@usi.com,usi.com,,,PROBABLE_SENIORITY,42.27,68.18,0.0,2025-09-02T17:07:28Z,2025-09-02T12:43:09Z,278,warm,Monitor,2026-06-07
+sub_ec7dea3a-cb65-4b94-99ac-6f942f319e78,pierre.saber@metlife.com,metlife.com,,,PROBABLE_SENIORITY,42.06,63.64,3.57,2025-09-02T18:28:46Z,2025-09-02T12:42:57Z,278,warm,Monitor,2026-06-07
+sub_2ecc81e2-735f-4b46-a008-134738ef9cc5,sujairaj.r@tvscredit.com,tvscredit.com,,,PROBABLE_SENIORITY,41.36,65.91,0.0,2025-09-02T17:07:30Z,2025-09-02T12:43:10Z,278,warm,Monitor,2026-06-07
+sub_9811f7ce-29ad-4de3-85a2-01b7f38a9058,autumn.cartwright@metlife.com,metlife.com,,,PROBABLE_SENIORITY,41.21,61.36,3.7,2025-09-02T18:28:47Z,2025-09-02T12:42:57Z,278,warm,Monitor,2026-06-07
+sub_9e112b53-d566-474a-83fa-570bc6ccaed8,linda.harvey@usi.com,usi.com,,,PROBABLE_SENIORITY,40.46,63.64,0.0,2025-09-02T17:07:11Z,2025-09-02T12:42:57Z,278,warm,Monitor,2026-06-07
+sub_e730ffd2-c080-49ce-9b55-7509f565c56b,john.kurath@warnerpacific.com,warnerpacific.com,,,PROBABLE_SENIORITY,40.46,63.64,0.0,2025-09-02T18:29:04Z,2025-09-02T12:43:11Z,278,warm,Monitor,2026-06-07
+sub_8bfcf421-12da-4324-bd4f-52ec680c96f6,abhinav.jain@tvscredit.com,tvscredit.com,,,PROBABLE_SENIORITY,40.46,63.64,0.0,2025-09-02T17:07:12Z,2025-09-02T12:42:58Z,278,warm,Monitor,2026-06-07
+sub_c7a876ac-7dff-4e2b-8c87-9c010ecca749,tina.campbell@usi.com,usi.com,,,PROBABLE_SENIORITY,39.54,61.36,0.0,2025-09-02T17:07:32Z,2025-09-02T12:43:10Z,278,warm,Monitor,2026-06-07
+sub_43323774-a1fb-4b48-85a1-8e6f9316f25c,amy.quiles@usi.com,usi.com,,,PROBABLE_SENIORITY,39.54,61.36,0.0,2025-09-02T18:28:47Z,2025-09-02T12:42:57Z,278,warm,Monitor,2026-06-07
+sub_6845aca2-78aa-4f8b-8446-033f144c89c1,gert.kongehl@rbc.com,rbc.com,,,PROBABLE_SENIORITY,39.24,4.35,50.0,2025-09-02T18:28:47Z,2025-09-02T12:42:57Z,278,warm,Monitor,2026-06-07
+sub_18efb1b3-6b2f-4f8d-92fa-e5b88f9312fb,michelle.black@usi.com,usi.com,,,PROBABLE_SENIORITY,38.64,59.09,0.0,2025-09-02T18:29:02Z,2025-09-02T12:43:10Z,278,warm,Monitor,2026-06-07
+sub_857f61b0-6bc3-46b2-9015-992f43a546c2,lily.vega@metlife.com,metlife.com,,,PROBABLE_SENIORITY,37.87,52.27,4.35,2025-09-02T17:07:10Z,2025-09-02T12:42:57Z,278,warm,Monitor,2026-06-07
+sub_77661dc2-c003-4dd4-ba5f-610533836677,carlos.hidalgo@usi.com,usi.com,,,PROBABLE_SENIORITY,37.73,56.82,0.0,2025-09-02T17:07:11Z,2025-09-02T12:42:57Z,278,warm,Monitor,2026-06-07
+sub_72ffad14-eaaa-42fb-ad4b-0a59df157040,glenna.ball@usi.com,usi.com,,,PROBABLE_SENIORITY,37.73,56.82,0.0,2025-09-02T17:07:30Z,2025-09-02T12:43:10Z,278,warm,Monitor,2026-06-07
+sub_eb47daa1-2d29-4b32-975d-b1e20c29b836,betsy.santiago@usi.com,usi.com,,,PROBABLE_SENIORITY,37.73,56.82,0.0,2025-09-02T17:07:29Z,2025-09-02T12:43:09Z,278,warm,Monitor,2026-06-07
+sub_df15f1d1-55a8-46bf-bebb-f90e639ba842,amanda.connally@warnerpacific.com,warnerpacific.com,,,PROBABLE_SENIORITY,37.73,56.82,0.0,2025-09-02T17:07:11Z,2025-09-02T12:42:56Z,278,warm,Monitor,2026-06-07
+sub_22e7b033-b43f-476a-9504-992ec181e7f1,megan.srp@usi.com,usi.com,,,PROBABLE_SENIORITY,36.82,54.55,0.0,2025-09-02T17:07:11Z,2025-09-02T12:42:57Z,278,warm,Monitor,2026-06-07
+sub_b4e0e6ce-ceb3-4c9c-900c-c17049075af7,gurpreet.g@td.com,td.com,,,PROBABLE_SENIORITY,36.82,54.55,0.0,2025-09-02T17:07:12Z,2025-09-02T12:42:57Z,278,warm,Monitor,2026-06-07
+sub_ec5aaa28-f01a-4779-a6e4-be55da1921b7,katherin.molina@usi.com,usi.com,,,PROBABLE_SENIORITY,36.82,54.55,0.0,2025-09-02T17:07:11Z,2025-09-02T12:42:58Z,278,warm,Monitor,2026-06-07
+sub_952f2e08-dbd5-4e27-9935-3e567678c3d9,danelle.kennedy@usi.com,usi.com,,,PROBABLE_SENIORITY,36.82,54.55,0.0,2025-09-02T17:07:12Z,2025-09-02T12:42:58Z,278,warm,Monitor,2026-06-07
+sub_125473e7-ae07-46e3-a490-8e68d6d3a98c,amy.schroeder@usi.com,usi.com,,,PROBABLE_SENIORITY,36.82,54.55,0.0,2025-09-02T17:07:30Z,2025-09-02T12:43:10Z,278,warm,Monitor,2026-06-07
+sub_40bf5c67-6704-4de8-ad3b-2bb5856d54af,ruth.rodriguez@usi.com,usi.com,,,PROBABLE_SENIORITY,36.82,54.55,0.0,2025-09-02T17:07:32Z,2025-09-02T12:43:11Z,278,warm,Monitor,2026-06-07
+sub_f7041677-1128-4a31-a275-974f2b93d56f,michelle.mcintyre@usi.com,usi.com,,,PROBABLE_SENIORITY,36.82,54.55,0.0,2025-09-02T18:28:47Z,2025-09-02T12:42:57Z,278,warm,Monitor,2026-06-07
+sub_01227a65-7ee7-416d-ba5d-b4080d89ba8d,michelle.book@usi.com,usi.com,,,PROBABLE_SENIORITY,36.62,54.05,0.0,2025-09-02T18:28:47Z,2025-09-02T12:42:57Z,278,warm,Monitor,2026-06-07
+sub_17f781ab-ea79-4b23-9400-b77d93561f7d,jsmith@oakbridgeinsurance.com,oakbridgeinsurance.com,,,PROBABLE_SENIORITY,35.91,52.27,0.0,2025-09-02T17:07:35Z,2025-09-02T12:43:11Z,278,warm,Monitor,2026-06-07
+sub_36fd63cc-2f29-41fa-9db3-e599acff048a,alyssa.caruso@usi.com,usi.com,,,PROBABLE_SENIORITY,35.91,52.27,0.0,2025-09-02T17:07:30Z,2025-09-02T12:43:10Z,278,warm,Monitor,2026-06-07
+sub_8db75180-c7a4-4c35-a8c7-9a66fd0f6406,caroline.duffy@usi.com,usi.com,,,PROBABLE_SENIORITY,35.91,52.27,0.0,2025-09-02T17:07:12Z,2025-09-02T12:42:58Z,278,warm,Monitor,2026-06-07
+sub_61ee333a-b1c6-4cf8-ba43-a526369d53de,linda.oliva@usi.com,usi.com,,,PROBABLE_SENIORITY,35.91,52.27,0.0,2025-09-02T17:07:11Z,2025-09-02T12:42:57Z,278,warm,Monitor,2026-06-07
+sub_0238aa96-0dfb-4a96-892b-947fd34d1dec,kristen.baez@usi.com,usi.com,,,PROBABLE_SENIORITY,35.91,52.27,0.0,2025-09-02T17:07:12Z,2025-09-02T12:42:58Z,278,warm,Monitor,2026-06-07
+sub_9fc2a9e4-aad7-4127-8141-998a9be4178e,megan.yochum@usi.com,usi.com,,,PROBABLE_SENIORITY,35.91,52.27,0.0,2025-09-02T17:07:30Z,2025-09-02T12:43:10Z,278,warm,Monitor,2026-06-07
+sub_c0e0d82c-dca8-43d1-b796-b749059fa591,kate.murray@themjcos.com,themjcos.com,,,PROBABLE_SENIORITY,35.91,52.27,0.0,2025-09-02T18:29:01Z,2025-09-02T12:43:10Z,278,warm,Monitor,2026-06-07
+sub_62965b89-68c0-4699-88f9-f06a1ef40dec,linda.esparza@usi.com,usi.com,,,PROBABLE_SENIORITY,35.0,50.0,0.0,2025-09-02T17:07:11Z,2025-09-02T12:42:57Z,278,warm,Monitor,2026-06-07
+sub_5b6bb643-2e09-4a4e-a113-82c08bed6038,shannon.gifford@imacorp.com,imacorp.com,,,PROBABLE_SENIORITY,35.0,50.0,0.0,2025-09-02T17:07:10Z,2025-09-02T12:42:56Z,278,warm,Monitor,2026-06-07
+sub_7aeed380-2b06-4a8c-9323-e1123cc38b51,beth.jackson@usi.com,usi.com,,,PROBABLE_SENIORITY,35.0,50.0,0.0,2025-09-02T17:07:11Z,2025-09-02T12:42:57Z,278,warm,Monitor,2026-06-07
+sub_aaebe923-608c-4e5c-90fd-41579feed922,emily.greer@usi.com,usi.com,,,PROBABLE_SENIORITY,34.09,47.73,0.0,2025-09-02T17:07:11Z,2025-09-02T12:42:57Z,278,warm,Monitor,2026-06-07
+sub_5363e3ec-6d11-4190-815f-24640569e293,jgaiser@truenorthcompanies.com,truenorthcompanies.com,,,PROBABLE_SENIORITY,34.09,47.73,0.0,2025-09-02T17:07:10Z,2025-09-02T12:42:56Z,278,warm,Monitor,2026-06-07
+sub_4c49b9da-bf3e-4806-9187-f37314151ee8,aguiao@westlandinsurance.ca,westlandinsurance.ca,,,PROBABLE_SENIORITY,34.09,47.73,0.0,2025-09-02T17:07:33Z,2025-09-02T12:43:11Z,278,warm,Monitor,2026-06-07
+sub_fa45ceb7-40ef-4a6c-a099-90565e698b0e,jennifer.sloan@usi.com,usi.com,,,PROBABLE_SENIORITY,34.09,47.73,0.0,2025-09-02T18:28:48Z,2025-09-02T12:42:58Z,278,warm,Monitor,2026-06-07
+sub_76e397d7-c15c-4b79-8114-1dd8bb76c179,kreilly@brokerlink.ca,brokerlink.ca,,,PROBABLE_SENIORITY,33.18,45.45,0.0,2025-09-02T18:29:02Z,2025-09-02T12:43:10Z,278,warm,Monitor,2026-06-07
+sub_40290307-9043-4b92-a314-b74ec6118988,swestcott@brokerlink.ca,brokerlink.ca,,,PROBABLE_SENIORITY,33.18,45.45,0.0,2025-09-02T17:07:33Z,2025-09-02T12:43:11Z,278,warm,Monitor,2026-06-07
+sub_a6175d14-64eb-4ad1-a734-b7a4c27586e3,lbrowning@higusa.com,higusa.com,,,PROBABLE_SENIORITY,33.18,45.45,0.0,2025-09-02T18:28:46Z,2025-09-02T12:42:57Z,278,warm,Monitor,2026-06-07
+sub_29207f8b-3d37-408f-9743-53e2f9923754,denise.hudson@amwins.com,amwins.com,,,PROBABLE_SENIORITY,32.27,43.18,0.0,2025-09-02T18:29:02Z,2025-09-02T12:43:10Z,278,warm,Monitor,2026-06-07
+sub_e966a489-4faa-4381-a7fc-adaa5183b5b0,klegge@brokerlink.ca,brokerlink.ca,,,PROBABLE_SENIORITY,32.27,43.18,0.0,2025-09-02T19:23:12Z,2025-09-02T12:42:58Z,278,warm,Monitor,2026-06-07
+sub_25322fb7-2e39-4b77-8a3a-ee8a5e030b7c,dptacek@lockton.com,lockton.com,,,PROBABLE_SENIORITY,32.27,43.18,0.0,2025-09-02T17:07:11Z,2025-09-02T12:42:57Z,278,warm,Monitor,2026-06-07
+sub_383514ab-6765-4d17-b0da-70654fc3bda2,ctaylor@lockton.com,lockton.com,,,PROBABLE_SENIORITY,31.36,40.91,0.0,2025-09-02T17:07:29Z,2025-09-02T12:43:09Z,278,warm,Monitor,2026-06-07
+sub_60c64fb2-f3a4-499f-96f7-c812499927e8,bmolesky@wcbsask.com,wcbsask.com,,,PROBABLE_SENIORITY,31.36,40.91,0.0,2025-09-02T18:29:04Z,2025-09-02T12:43:11Z,278,warm,Monitor,2026-06-07
+sub_800065e0-f1c2-4bc7-b42b-a49e8b7e4820,veliotta.fabrikarakis@qbe.com,qbe.com,,,PROBABLE_SENIORITY,31.36,40.91,0.0,2025-09-02T17:07:09Z,2025-09-02T12:42:56Z,278,warm,Monitor,2026-06-07
+sub_5af3c4d5-8ea3-4e2f-9a5b-1512d7a0e673,jurban@lockton.com,lockton.com,,,PROBABLE_SENIORITY,31.36,40.91,0.0,2025-09-02T17:07:29Z,2025-09-02T12:43:09Z,278,warm,Monitor,2026-06-07
+sub_39bb753a-3e14-4a06-bcd7-08020398a44b,lorna_geier@rpsins.com,rpsins.com,,,PROBABLE_SENIORITY,31.36,40.91,0.0,2025-09-02T17:07:32Z,2025-09-02T12:43:10Z,278,warm,Monitor,2026-06-07
+sub_d93052bd-424b-4c4f-95ad-4a8ed36fcd16,catie_mcmullen@rpsins.com,rpsins.com,,,PROBABLE_SENIORITY,31.36,40.91,0.0,2025-09-02T17:07:33Z,2025-09-02T12:43:11Z,278,warm,Monitor,2026-06-07
+sub_2536dcfa-774d-4fb8-936e-ea383bee64b1,filomenab@jdimi.com,jdimi.com,,,PROBABLE_SENIORITY,31.36,40.91,0.0,2025-09-02T17:07:10Z,2025-09-02T12:42:56Z,278,warm,Monitor,2026-06-07
+sub_ffb7eebb-14fb-4785-9930-721e8267b923,ray_nepras@rpsins.com,rpsins.com,,,PROBABLE_SENIORITY,30.46,38.64,0.0,2025-09-02T18:29:04Z,2025-09-02T12:43:11Z,278,warm,Monitor,2026-06-07
+sub_b5992d57-ec50-48db-9f3d-241c440690ea,gabriel.bilodeau@td.com,td.com,,,PROBABLE_SENIORITY,30.46,38.64,0.0,2025-09-02T17:07:12Z,2025-09-02T12:42:57Z,278,warm,Monitor,2026-06-07
+sub_d2997198-066a-4af3-8dff-6e7f4b734fb8,abdumalik.turapov@ipotekabank.uz,ipotekabank.uz,,,PROBABLE_SENIORITY,30.46,38.64,0.0,2025-09-02T17:07:10Z,2025-09-02T12:42:57Z,278,warm,Monitor,2026-06-07

@@ -92,3 +92,21 @@ export function inSegment(lead: Lead, segment: Segment): boolean {
       return true;
   }
 }
+
+// ── Public view ───────────────────────────────────────────────────────────
+// The tool is open without a login, so nothing that reaches a browser or a
+// CSV carries a full subscriber email or a LinkedIn profile link.
+export function maskEmail(email: string): string {
+  const at = email.lastIndexOf("@");
+  if (at < 1) return "hidden";
+  return `${email[0]}***${email.slice(at)}`;
+}
+
+export function publicLead<T extends Lead>(lead: T): T {
+  return {
+    ...lead,
+    name: displayName(lead) || null,
+    email: maskEmail(lead.email),
+    linkedinUrl: null,
+  };
+}

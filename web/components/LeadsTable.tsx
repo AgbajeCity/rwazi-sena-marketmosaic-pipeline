@@ -263,7 +263,7 @@ export function LeadsTable({ leads }: Props) {
     return sortDir === "asc" ? (av as number) - (bv as number) : (bv as number) - (av as number);
   });
 
-  const selectedRank = selected ? sorted.findIndex((l) => l.email === selected.email) + 1 : 0;
+  const selectedRank = selected ? sorted.findIndex((l) => l.id === selected.id) + 1 : 0;
 
   if (leads.length === 0) {
     return (
@@ -306,11 +306,11 @@ export function LeadsTable({ leads }: Props) {
               const action = recommendedAction(lead.tier);
               const openPct = lead.openRate != null ? `${lead.openRate.toFixed(1)}%` : "—";
               const clickPct = lead.clickRate != null ? `${lead.clickRate.toFixed(1)}%` : "—";
-              const isSelected = selected?.email === lead.email;
+              const isSelected = selected?.id === lead.id;
 
               return (
                 <tr
-                  key={lead.email}
+                  key={lead.id}
                   onClick={() => setSelected(isSelected ? null : lead)}
                   className={`border-b border-zinc-50 group cursor-pointer transition-colors ${isSelected ? "bg-orange-50/60" : "hover:bg-zinc-50"}`}
                 >

@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { loadLeads } from "@/lib/storage";
-import seedLeads from "@/lib/seed-leads.json";
 import { PipelineResult } from "@/lib/pipeline";
-import { LEAD_SOURCE, recommendedAction, countryName, displayName, inSegment, isSegment, type Segment } from "@/lib/leads";
+import { LEAD_SOURCE, recommendedAction, countryName, displayName, inSegment, isSegment, publicLead, type Segment } from "@/lib/leads";
 import { regionForCountry, isEmergingMarket } from "@/lib/regions";
 
 export const runtime = "nodejs";
@@ -44,11 +43,12 @@ function dateOnly(iso: string | null | undefined): string {
 }
 
 export async function GET(req: Request) {
-  const result: PipelineResult = (await loadLeads()) ?? (seedLeads as unknown as PipelineResult);
+  const result: PipelineResult | null = await loadLeads();
 
   const segParam = new URL(req.url).searchParams.get("segment");
   const segment: Segment = isSegment(segParam) ? segParam : "all";
-  const leads = result.leads.filter((l) => inSegment(l, segment));
+  // Open without a login, so the CSV carries masked emails and no LinkedIn links.
+  const leads = (result?.leads ?? []).filter((l) => inSegment(l, segment)).map(publicLead);
 
   const rows = leads.map((l) => [
     displayName(l),
@@ -79,7 +79,7 @@ export async function GET(req: Request) {
     .map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
     .join("\n");
 
-  const date = result.runDate ? dateOnly(result.runDate) : new Date().toISOString().slice(0, 10);
+  const date = result?.runDate ? dateOnly(result.runDate) : new Date().toISOString().slice(0, 10);
   const suffix = segment === "all" ? "" : `_${segment}`;
   return new NextResponse(csv, {
     headers: {

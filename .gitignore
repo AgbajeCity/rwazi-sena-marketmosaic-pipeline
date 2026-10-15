@@ -8,3 +8,11 @@ build/
 .env
 .claude/
 .next/
+
+# Subscriber data stays out of version control
+sena_pipeline/cache/*.json
+sena_pipeline/outputs/*.csv
+sena_pipeline/outputs/*.md
+sena_pipeline/outputs/*.txt
+.env*
+!.env*.example

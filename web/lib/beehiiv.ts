@@ -24,6 +24,7 @@ export interface SubscriberStats {
   total_unique_opened?: number;
   total_clicked?: number;
   open_rate?: number;
+  click_through_rate?: number;
   click_rate?: number;
 }
 
@@ -105,7 +106,7 @@ export function extractOpenRate(detail: SubscriberLike): number {
 }
 
 export function extractClickRate(detail: SubscriberLike): number {
-  return detail.stats?.click_rate ?? 0;
+  return detail.stats?.click_through_rate ?? detail.stats?.click_rate ?? 0;
 }
 
 export function extractCustomField(detail: SubscriberLike, name: string): string | null {
